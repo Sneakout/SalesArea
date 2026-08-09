@@ -90,7 +90,7 @@ export default function TradingAreaAnalysisPanel({
         exit={{ opacity: 0, y: -12 }}
         transition={{ duration: 0.3 }}
       >
-        <div>
+        <div className="panel-content">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -118,40 +118,38 @@ export default function TradingAreaAnalysisPanel({
                     style={{ width: 24, height: 24, objectFit: "contain" }}
                   />
                 </button>
-                <h2 style={{ margin: 0 }}>{taSelected?.trading_area}</h2>
+                <h2 style={{ margin: 0, fontSize: "var(--font-xl)" }}>{taSelected?.trading_area}</h2>
               </div>
-              <div style={{ color: "#64748B", marginTop: 6 }}>Trading area analysis</div>
+              <div style={{ color: "#64748B", marginTop: 6, fontSize: "var(--font-sm)" }}>Trading area analysis</div>
             </div>
           </div>
 
           <div style={{ marginTop: 16 }}>
             <div
+              className="metric-summary-grid"
               style={{
-                display: "grid",
-                gridTemplateColumns: activeMetric === "combined" ? "repeat(11, 1fr)" : "repeat(7, 1fr)",
-                gap: 12,
-                alignItems: "center",
+                gridTemplateColumns: activeMetric === "combined" ? "repeat(11, minmax(0, 1fr))" : "repeat(7, minmax(0, 1fr))",
               }}
             >
-              <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>Period</div>
-              <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>Outlets</div>
+              <div className="metric-summary-label">Period</div>
+              <div className="metric-summary-label">Outlets</div>
               {activeMetric === "combined" ? (
                 <>
-                  <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>MS</div>
-                  <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>MS LY</div>
-                  <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>MS Change</div>
-                  <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>Avg MS</div>
-                  <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>HSD</div>
-                  <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>HSD LY</div>
-                  <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>HSD Change</div>
-                  <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>Avg HSD</div>
+                  <div className="metric-summary-label">MS</div>
+                  <div className="metric-summary-label">MS LY</div>
+                  <div className="metric-summary-label">MS Change</div>
+                  <div className="metric-summary-label">Avg MS</div>
+                  <div className="metric-summary-label">HSD</div>
+                  <div className="metric-summary-label">HSD LY</div>
+                  <div className="metric-summary-label">HSD Change</div>
+                  <div className="metric-summary-label">Avg HSD</div>
                 </>
               ) : (
                 <>
-                  <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>{metricLabel}</div>
-                  <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>{metricLabel} LY</div>
-                  <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>{metricLabel} Change</div>
-                  <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>Avg {metricLabel}</div>
+                  <div className="metric-summary-label">{metricLabel}</div>
+                  <div className="metric-summary-label">{metricLabel} LY</div>
+                  <div className="metric-summary-label">{metricLabel} Change</div>
+                  <div className="metric-summary-label">Avg {metricLabel}</div>
                 </>
               )}
             </div>
@@ -165,39 +163,39 @@ export default function TradingAreaAnalysisPanel({
                 transition={{ duration: 0.3 }}
                 style={{
                   display: "grid",
-                  gridTemplateColumns: activeMetric === "combined" ? "repeat(11, 1fr)" : "repeat(7, 1fr)",
-                  gap: 12,
+                  gridTemplateColumns: activeMetric === "combined" ? "repeat(11, minmax(0, 1fr))" : "repeat(7, minmax(0, 1fr))",
+                  gap: "clamp(10px, 1vw, 14px)",
                   alignItems: "center",
                 }}
               >
-                <div style={{ fontWeight: 600 }}>{periodLabel}</div>
-                <div style={{ fontWeight: 700 }}>{outletCount}</div>
+                <div className="metric-summary-value" style={{ fontWeight: 600 }}>{periodLabel}</div>
+                <div className="metric-summary-value-strong">{outletCount}</div>
                 {activeMetric === "combined" ? (
                   <>
-                    <div style={{ fontWeight: 700 }}>{formatRoundedNumber(areaTotals.ms)}</div>
-                    <div>{formatRoundedNumber(areaTotals.ms_ly)}</div>
+                    <div className="metric-summary-value-strong">{formatRoundedNumber(areaTotals.ms)}</div>
+                    <div className="metric-summary-value">{formatRoundedNumber(areaTotals.ms_ly)}</div>
                     <div>
                       <VolumeChange curr={areaTotals.ms} prev={areaTotals.ms_ly} />
                     </div>
-                    <div>{formatRoundedNumber(areaAverages.ms)}</div>
-                    <div style={{ fontWeight: 700 }}>{formatRoundedNumber(areaTotals.hsd)}</div>
-                    <div>{formatRoundedNumber(areaTotals.hsd_ly)}</div>
+                    <div className="metric-summary-value">{formatRoundedNumber(areaAverages.ms)}</div>
+                    <div className="metric-summary-value-strong">{formatRoundedNumber(areaTotals.hsd)}</div>
+                    <div className="metric-summary-value">{formatRoundedNumber(areaTotals.hsd_ly)}</div>
                     <div>
                       <VolumeChange curr={areaTotals.hsd} prev={areaTotals.hsd_ly} />
                     </div>
-                    <div>{formatRoundedNumber(areaAverages.hsd)}</div>
+                    <div className="metric-summary-value">{formatRoundedNumber(areaAverages.hsd)}</div>
                   </>
                 ) : (
                   <>
-                    <div style={{ fontWeight: 700 }}>{formatRoundedNumber(activeMetric === "ms" ? areaTotals.ms : areaTotals.hsd)}</div>
-                    <div>{formatRoundedNumber(activeMetric === "ms" ? areaTotals.ms_ly : areaTotals.hsd_ly)}</div>
+                    <div className="metric-summary-value-strong">{formatRoundedNumber(activeMetric === "ms" ? areaTotals.ms : areaTotals.hsd)}</div>
+                    <div className="metric-summary-value">{formatRoundedNumber(activeMetric === "ms" ? areaTotals.ms_ly : areaTotals.hsd_ly)}</div>
                     <div>
                       <VolumeChange
                         curr={activeMetric === "ms" ? areaTotals.ms : areaTotals.hsd}
                         prev={activeMetric === "ms" ? areaTotals.ms_ly : areaTotals.hsd_ly}
                       />
                     </div>
-                    <div>{formatRoundedNumber(activeMetric === "ms" ? areaAverages.ms : areaAverages.hsd)}</div>
+                    <div className="metric-summary-value">{formatRoundedNumber(activeMetric === "ms" ? areaAverages.ms : areaAverages.hsd)}</div>
                   </>
                 )}
               </motion.div>

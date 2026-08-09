@@ -1,8 +1,90 @@
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  width: 100%;
+  max-width: none;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+
+.app-shell {
+  font-size: var(--font-sm);
+}
+
+.panel-content {
+  font-size: var(--font-sm);
+  line-height: 1.5;
+}
+
+.search-overlay {
+  width: min(24rem, calc(100vw - 2rem));
+}
+
+.control-input,
+.control-select {
+  min-height: 2.5rem;
+  font-size: var(--font-sm);
+}
+
+.metric-summary-grid {
+  display: grid;
+  gap: clamp(10px, 1vw, 14px);
+  align-items: center;
+}
+
+.metric-summary-label {
+  font-size: var(--font-xs);
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+.metric-summary-value {
+  font-size: var(--font-md);
+}
+
+.metric-summary-value-strong {
+  font-size: var(--font-md);
+  font-weight: 700;
+}
+
+.data-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: clamp(10px, 1vw, 14px);
+  box-shadow: 0 1px 2px rgba(2, 6, 23, 0.04);
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-sm);
+}
+
+.data-table thead {
+  color: #94a3b8;
+  text-align: left;
+}
+
+.data-table th {
+  font-size: var(--font-xs);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.data-table th,
+.data-table td {
+  padding: 0.62rem 0.5rem;
+  vertical-align: middle;
+}
+
+.data-table td {
+  line-height: 1.4;
+}
+
+.data-table td:first-child,
+.data-table th:first-child {
+  min-width: 10rem;
 }
 
 /* prev/next nav button */
@@ -54,15 +136,15 @@
 .analysis-tab {
   flex: 0 0 auto;
   appearance: none;
-  min-height: 38px;
-  padding: 8px 12px;
+  min-height: 40px;
+  padding: 9px 13px;
   border: 1px solid rgba(148, 163, 184, 0.35);
   border-radius: 10px;
   background: #fff;
   color: #1f3347;
-  font-size: 14px;
+  font-size: var(--font-sm);
   font-weight: 650;
-  line-height: 1.15;
+  line-height: 1.25;
   cursor: pointer;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
   transition: background 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease, color 0.16s ease;
@@ -196,7 +278,7 @@
   background: #fff;
   color: #0f172a;
   font-weight: 700;
-  font-size: 14px;
+  font-size: var(--font-sm);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -243,4 +325,34 @@
   display:flex; align-items:center; justify-content:center;
   box-shadow: 0 4px 14px rgba(0,0,0,0.08);
   z-index: 1000; /* <-- add this */
+}
+
+@media (max-width: 1100px) {
+  .analysis-tabs {
+    gap: 6px;
+  }
+
+  .analysis-tab {
+    min-height: 38px;
+    padding: 8px 11px;
+  }
+
+  .data-table td:first-child,
+  .data-table th:first-child {
+    min-width: 8.5rem;
+  }
+}
+
+@media (max-width: 720px) {
+  .metric-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .analysis-tabs {
+    padding-bottom: 10px;
+  }
+
+  .search-overlay {
+    width: min(22rem, calc(100vw - 1.25rem));
+  }
 }

@@ -104,7 +104,7 @@ if (typeof document !== "undefined") {
 }
 .ai-inputbar input{
   flex:1; border:none; outline:none; background:transparent;
-  padding:8px 10px; font-size:14px; color:#0F172A;
+  padding:8px 10px; font-size:var(--font-sm); color:#0F172A;
 }
 .ai-send{
   border:none; border-radius:999px; padding:8px 14px;
@@ -117,7 +117,7 @@ if (typeof document !== "undefined") {
   width:min(760px, 92%);
   background:#FFF; border:1px solid #E5E7EB; border-radius:16px;
   padding:12px 14px; box-shadow: 0 12px 36px rgba(2,6,23,0.12);
-  max-height:55vh; overflow:auto; white-space:pre-wrap; font-size:13px; color:#0F172A;
+  max-height:55vh; overflow:auto; white-space:pre-wrap; font-size:var(--font-sm); color:#0F172A;
 }
 
 
@@ -397,7 +397,7 @@ function PercentBadge({ value }) {
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', padding: '4px 8px', borderRadius: 8,
-      background: positive ? '#DCFCE7' : '#FEE2E2', color: positive ? '#064E3B' : '#7F1D1D', fontWeight: 700, fontSize: 12
+      background: positive ? '#DCFCE7' : '#FEE2E2', color: positive ? '#064E3B' : '#7F1D1D', fontWeight: 700, fontSize: 'var(--font-xs)'
     }}>{positive ? '▲' : '▼'} {Math.abs(value).toFixed(1)}%</span>
   );
 }
@@ -406,9 +406,10 @@ function MonthSelector({ records, value, onChange }) {
   const months = uniqueSortedActualMonths(records);
   if (!months.length) return null;
   return (
-    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-      <label style={{ color: '#475569', fontSize: 13, minWidth: 70 }}>Month</label>
+    <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+      <label style={{ color: '#475569', fontSize: 'var(--font-sm)', minWidth: 70, fontWeight: 600 }}>Month</label>
       <select
+        className="control-select"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         style={{
@@ -416,7 +417,6 @@ function MonthSelector({ records, value, onChange }) {
           borderRadius: 6,
           border: '1px solid #E6EEF3',
           background: '#fff',
-          fontSize: 13
         }}
       >
         {months.map(m => (
@@ -439,10 +439,10 @@ function MonthSelector({ records, value, onChange }) {
 function GrowthTable({ rows, label }) {
   return (
     <div style={{ marginTop: 10 }}>
-      <h4 style={{ margin: '0 0 6px 0' }}>{label}</h4>
-      <div style={{ background: '#fff', borderRadius: 8, padding: 12, boxShadow: '0 1px 2px rgba(2,6,23,0.04)' }}>
-        <table style={{ width: '100%', fontSize: 13, borderCollapse: 'collapse' }}>
-<thead style={{ color: '#94A3B8', textAlign: 'left' }}>
+      <h4 style={{ margin: '0 0 6px 0', fontSize: 'var(--font-lg)' }}>{label}</h4>
+      <div className="data-card">
+        <table className="data-table">
+<thead>
   <tr>
     <th style={{ padding: '8px 6px' }}>RO name</th>
     <th style={{ padding: '8px 6px' }}>Company</th>
@@ -459,13 +459,13 @@ function GrowthTable({ rows, label }) {
               <tr><td colSpan={6} style={{ padding: 16, color: '#64748B' }}>No matching ROs.</td></tr>
             ) : rows.map((r, i) => (
               <tr key={i} style={{ borderTop: '1px solid #F1F5F9' }}>
-                <td style={{ padding: '8px 6px' }}>{r.name}</td>
-                <td style={{ padding: '8px 6px' }}>{r.company}</td> {/* NEW */}
-                <td style={{ padding: '8px 6px' }}>{r.area}</td>
-                <td style={{ padding: '8px 6px', fontWeight: 700 }}>{formatRoundedNumber(r.thisYear)}</td>
-                <td style={{ padding: '8px 6px' }}>{formatRoundedNumber(r.lastYear)}</td>
-                <td style={{ padding: '8px 6px' }}>{(Number(r.growth) >= 0 ? '+' : '-') + formatRoundedNumber(Math.abs(Number(r.growth || 0)))}</td>
-                <td style={{ padding: '8px 6px' }}>{Number(r.growthPct).toFixed(1)}%</td>
+                <td>{r.name}</td>
+                <td>{r.company}</td>
+                <td>{r.area}</td>
+                <td style={{ fontWeight: 700 }}>{formatRoundedNumber(r.thisYear)}</td>
+                <td>{formatRoundedNumber(r.lastYear)}</td>
+                <td>{(Number(r.growth) >= 0 ? '+' : '-') + formatRoundedNumber(Math.abs(Number(r.growth || 0)))}</td>
+                <td>{Number(r.growthPct).toFixed(1)}%</td>
               </tr>
             ))}
           </tbody>
@@ -477,10 +477,10 @@ function GrowthTable({ rows, label }) {
 function SummaryTable({ rows, label }) {
   return (
     <div style={{ marginTop: 10 }}>
-      <h4 style={{ margin: '0 0 6px 0' }}>{label}</h4>
-      <div style={{ background: '#fff', borderRadius: 8, padding: 12, boxShadow: '0 1px 2px rgba(2,6,23,0.04)' }}>
-        <table style={{ width: '100%', fontSize: 13, borderCollapse: 'collapse' }}>
-          <thead style={{ color: '#94A3B8', textAlign: 'left' }}>
+      <h4 style={{ margin: '0 0 6px 0', fontSize: 'var(--font-lg)' }}>{label}</h4>
+      <div className="data-card">
+        <table className="data-table">
+          <thead>
             <tr>
               <th style={{ padding: '8px 6px' }}>Company</th>
               <th style={{ padding: '8px 6px' }}>Number of ROs</th>
@@ -493,10 +493,10 @@ function SummaryTable({ rows, label }) {
               <tr><td colSpan={4} style={{ padding: 16, color: '#64748B' }}>No data.</td></tr>
             ) : rows.map((r, i) => (
               <tr key={i} style={{ borderTop: '1px solid #F1F5F9' }}>
-                <td style={{ padding: '8px 6px' }}>{r.company}</td>
-                <td style={{ padding: '8px 6px' }}>{r.total}</td>
-                <td style={{ padding: '8px 6px' }}>{r.withoutBase}</td>
-                <td style={{ padding: '8px 6px' }}>{r.withBase}</td>
+                <td>{r.company}</td>
+                <td>{r.total}</td>
+                <td>{r.withoutBase}</td>
+                <td>{r.withBase}</td>
               </tr>
             ))}
           </tbody>
@@ -510,10 +510,10 @@ function SummaryTable({ rows, label }) {
 function MarketShareTable({ rows, label }) {
   return (
     <div style={{ marginTop: 10 }}>
-      <h4 style={{ margin: '0 0 6px 0' }}>{label}</h4>
-      <div style={{ background: '#fff', borderRadius: 8, padding: 12, boxShadow: '0 1px 2px rgba(2,6,23,0.04)' }}>
-        <table style={{ width: '100%', fontSize: 13, borderCollapse: 'collapse' }}>
-          <thead style={{ color: '#94A3B8', textAlign: 'left' }}>
+      <h4 style={{ margin: '0 0 6px 0', fontSize: 'var(--font-lg)' }}>{label}</h4>
+      <div className="data-card">
+        <table className="data-table">
+          <thead>
             <tr>
               <th style={{ padding: '8px 6px' }}>Company</th>
               <th style={{ padding: '8px 6px' }}>Current year sales</th>
@@ -577,10 +577,10 @@ function ProjectionTable({ rows, label, targetMonth }) {
     : "Last year";
   return (
     <div style={{ marginTop: 10 }}>
-      <h4 style={{ margin: "0 0 6px 0" }}>{label}</h4>
-      <div style={{ background: "#fff", borderRadius: 8, padding: 12, boxShadow: "0 1px 2px rgba(2,6,23,0.04)" }}>
-        <table style={{ width: "100%", fontSize: 13, borderCollapse: "collapse" }}>
-          <thead style={{ color: "#94A3B8", textAlign: "left" }}>
+      <h4 style={{ margin: "0 0 6px 0", fontSize: "var(--font-lg)" }}>{label}</h4>
+      <div className="data-card">
+        <table className="data-table">
+          <thead>
             <tr>
               <th style={{ padding: "8px 6px" }}>Company</th>
               <th style={{ padding: "8px 6px" }}>{lastYearMonthLabel} sales</th>
@@ -647,7 +647,7 @@ function ProjectionMethodologyNote({ latestMonth, targetMonth }) {
       borderRadius: 10,
       padding: 12,
       color: "#475569",
-      fontSize: 13,
+      fontSize: "var(--font-sm)",
       lineHeight: 1.5,
     }}>
       Projection for <strong>{formatMonth(targetMonth)}</strong> is estimated outlet by outlet using the target month last year as the seasonal base,
@@ -665,7 +665,7 @@ function ProjectionMethodologyNote({ latestMonth, targetMonth }) {
 function PageContextLine({ children }) {
   if (!children) return null;
   return (
-    <div style={{ color: "#64748B", fontSize: 13, marginBottom: 8 }}>
+    <div style={{ color: "#64748B", fontSize: "var(--font-sm)", marginBottom: 8 }}>
       {children}
     </div>
   );
@@ -674,10 +674,10 @@ function PageContextLine({ children }) {
 function TradingAreaLossTable({ rows, label, onAreaSelect }) {
   return (
     <div style={{ marginTop: 10 }}>
-      <h4 style={{ margin: '0 0 6px 0' }}>{label}</h4>
-      <div style={{ background: '#fff', borderRadius: 8, padding: 12, boxShadow: '0 1px 2px rgba(2,6,23,0.04)' }}>
-        <table style={{ width: '100%', fontSize: 13, borderCollapse: 'collapse' }}>
-          <thead style={{ color: '#94A3B8', textAlign: 'left' }}>
+      <h4 style={{ margin: '0 0 6px 0', fontSize: 'var(--font-lg)' }}>{label}</h4>
+      <div className="data-card">
+        <table className="data-table">
+          <thead>
             <tr>
               <th style={{ padding: '8px 6px' }}>Trading area</th>
               <th style={{ padding: '8px 6px' }}>IOC current sales</th>
@@ -742,8 +742,9 @@ function TradingAreaLossTable({ rows, label, onAreaSelect }) {
 function LossRankingSelector({ value, onChange }) {
   return (
     <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-      <label style={{ color: "#64748B", fontSize: 13, fontWeight: 600 }}>Rank by</label>
+      <label style={{ color: "#64748B", fontSize: "var(--font-sm)", fontWeight: 600 }}>Rank by</label>
       <select
+        className="control-select"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         style={{
@@ -751,7 +752,6 @@ function LossRankingSelector({ value, onChange }) {
           borderRadius: 8,
           border: "1px solid #E6EEF3",
           background: "#fff",
-          fontSize: 13,
         }}
       >
         <option value="share">Market share loss</option>
@@ -764,8 +764,9 @@ function LossRankingSelector({ value, onChange }) {
 function MarketShareScopeSelector({ value, onChange }) {
   return (
     <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-      <label style={{ color: "#64748B", fontSize: 13, fontWeight: 600 }}>Scope</label>
+      <label style={{ color: "#64748B", fontSize: "var(--font-sm)", fontWeight: 600 }}>Scope</label>
       <select
+        className="control-select"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         style={{
@@ -773,7 +774,6 @@ function MarketShareScopeSelector({ value, onChange }) {
           borderRadius: 8,
           border: "1px solid #E6EEF3",
           background: "#fff",
-          fontSize: 13,
         }}
       >
         <option value="industry">Industry</option>
@@ -786,8 +786,9 @@ function MarketShareScopeSelector({ value, onChange }) {
 function CompanyFilterSelector({ value, onChange, companies }) {
   return (
     <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-      <label style={{ color: "#64748B", fontSize: 13, fontWeight: 600 }}>Company</label>
+      <label style={{ color: "#64748B", fontSize: "var(--font-sm)", fontWeight: 600 }}>Company</label>
       <select
+        className="control-select"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         style={{
@@ -795,7 +796,6 @@ function CompanyFilterSelector({ value, onChange, companies }) {
           borderRadius: 8,
           border: "1px solid #E6EEF3",
           background: "#fff",
-          fontSize: 13,
         }}
       >
         <option value="all">All companies</option>
@@ -812,8 +812,9 @@ function CompanyFilterSelector({ value, onChange, companies }) {
 function ClassOfMarketSelector({ value, onChange, classes }) {
   return (
     <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-      <label style={{ color: "#64748B", fontSize: 13, fontWeight: 600 }}>Class of market</label>
+      <label style={{ color: "#64748B", fontSize: "var(--font-sm)", fontWeight: 600 }}>Class of market</label>
       <select
+        className="control-select"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         style={{
@@ -821,7 +822,6 @@ function ClassOfMarketSelector({ value, onChange, classes }) {
           borderRadius: 8,
           border: "1px solid #E6EEF3",
           background: "#fff",
-          fontSize: 13,
         }}
       >
         <option value="all">All classes</option>
@@ -838,10 +838,10 @@ function ClassOfMarketSelector({ value, onChange, classes }) {
 function CountSummaryTable({ rows, label }) {
   return (
     <div style={{ marginTop: 10 }}>
-      <h4 style={{ margin: "0 0 6px 0" }}>{label}</h4>
-      <div style={{ background: "#fff", borderRadius: 8, padding: 12, boxShadow: "0 1px 2px rgba(2,6,23,0.04)" }}>
-        <table style={{ width: "100%", fontSize: 13, borderCollapse: "collapse" }}>
-          <thead style={{ color: "#94A3B8", textAlign: "left" }}>
+      <h4 style={{ margin: "0 0 6px 0", fontSize: "var(--font-lg)" }}>{label}</h4>
+      <div className="data-card">
+        <table className="data-table">
+          <thead>
             <tr>
               <th style={{ padding: "8px 6px" }}>Company</th>
               <th style={{ padding: "8px 6px" }}>Count</th>
@@ -866,10 +866,10 @@ function CountSummaryTable({ rows, label }) {
 function CommissioningTable({ rows, label, monthLabel, trailingLabel }) {
   return (
     <div style={{ marginTop: 10 }}>
-      <h4 style={{ margin: "0 0 6px 0" }}>{label}</h4>
-      <div style={{ background: "#fff", borderRadius: 8, padding: 12, boxShadow: "0 1px 2px rgba(2,6,23,0.04)" }}>
-        <table style={{ width: "100%", fontSize: 13, borderCollapse: "collapse" }}>
-          <thead style={{ color: "#94A3B8", textAlign: "left" }}>
+      <h4 style={{ margin: "0 0 6px 0", fontSize: "var(--font-lg)" }}>{label}</h4>
+      <div className="data-card">
+        <table className="data-table">
+          <thead>
             <tr>
               <th style={{ padding: "8px 6px" }}>Month</th>
               <th style={{ padding: "8px 6px" }}>Company</th>
@@ -925,11 +925,11 @@ function RenderSummary({ text }) {
 
   if (items.length === 0) {
     // fallback: just show the paragraph
-    return <p style={{ margin: "0 0 8px", color: "#475569", fontSize: 13 }}>{t}</p>;
+    return <p style={{ margin: "0 0 8px", color: "#475569", fontSize: "var(--font-sm)" }}>{t}</p>;
   }
 
   return (
-    <ul style={{ margin: "0 0 8px 16px", padding: 0, color: "#475569", fontSize: 13 }}>
+    <ul style={{ margin: "0 0 8px 16px", padding: 0, color: "#475569", fontSize: "var(--font-sm)" }}>
       {items.map((it, i) => (
         <li key={i} style={{ marginBottom: 4 }}>{it.replace(/\s*\.$/, ".")}</li>
       ))}
@@ -952,14 +952,14 @@ function SQLResult({ sql, columns = [], rows = [], summary = "" }) {
   };
 
   return (
-    <div style={{ fontSize: 13, color: "#0F172A" }}>
+    <div style={{ fontSize: "var(--font-sm)", color: "#0F172A" }}>
       {summary && <RenderSummary text={summary} />}
 
       {SHOW_SQL && (
         <div style={{
           background: "#0B1020", color: "#E5E7EB", padding: 10, borderRadius: 8,
           fontFamily: "ui-monospace, Menlo, Monaco, Consolas, 'Courier New', monospace",
-          fontSize: 12, marginBottom: 10, overflowX: "auto"
+          fontSize: "var(--font-xs)", marginBottom: 10, overflowX: "auto"
         }}>
           {sql}
         </div>
@@ -970,7 +970,7 @@ function SQLResult({ sql, columns = [], rows = [], summary = "" }) {
           <thead style={{ position: "sticky", top: 0, background: "#F8FAFC" }}>
             <tr>
               {columns.map((c, i) => (
-                <th key={i} style={{ padding: "8px 10px", textAlign: "left", fontSize: 12, color: "#64748B", borderBottom: "1px solid #E5E7EB" }}>
+                <th key={i} style={{ padding: "8px 10px", textAlign: "left", fontSize: "var(--font-xs)", color: "#64748B", borderBottom: "1px solid #E5E7EB" }}>
                   {c}
                 </th>
               ))}
@@ -985,7 +985,7 @@ function SQLResult({ sql, columns = [], rows = [], summary = "" }) {
                   const header = columns[ci] || "";
                   const showAsText = isStringCol(header);
                   return (
-                    <td key={ci} style={{ padding: "8px 10px", fontSize: 13 }}>
+                    <td key={ci} style={{ padding: "8px 10px", fontSize: "var(--font-sm)" }}>
                       {showAsText
                         ? String(cell ?? "")
                         : (typeof cell === "number" ? cell.toLocaleString("en-IN") : String(cell ?? ""))
@@ -1596,7 +1596,7 @@ function selectSuggestion(sug) {
     <span style={{
       display: "inline-flex", alignItems: "center",
       padding: "2px 8px", borderRadius: 999,
-      fontWeight: 700, fontSize: 12, background: t.bg, color: t.fg
+      fontWeight: 700, fontSize: "var(--font-xs)", background: t.bg, color: t.fg
     }}>{children}</span>
   );
 }
@@ -1604,7 +1604,7 @@ function selectSuggestion(sug) {
 function SectionTitle({ children }) {
   return (
     <div style={{
-      fontSize: 12, letterSpacing: .3, color: '#64748B',
+      fontSize: "var(--font-xs)", letterSpacing: .3, color: '#64748B',
       textTransform: 'uppercase', margin: '10px 0 6px'
     }}>{children}</div>
   );
@@ -1648,8 +1648,8 @@ function AIReplyPro({ text }) {
     }).filter(Boolean);
 
     return (
-      <div style={{ fontSize: 14, lineHeight: 1.6, color: "#0F172A" }}>
-        <div style={{ fontSize: 15, fontWeight: 800, marginBottom: 8 }}>{title}</div>
+      <div style={{ fontSize: "var(--font-sm)", lineHeight: 1.6, color: "#0F172A" }}>
+        <div style={{ fontSize: "var(--font-md)", fontWeight: 800, marginBottom: 8 }}>{title}</div>
         <div style={{ display: 'grid', gap: 6 }}>
           {items.map((it, i) => (
             <div key={i} style={{
@@ -1666,11 +1666,11 @@ function AIReplyPro({ text }) {
               }}>{i+1}</div>
               <div>
                 <div style={{ fontWeight: 800 }}>{it.name}</div>
-                <div style={{ color:'#64748B', fontSize: 12 }}>{it.company} • {it.area}</div>
+                <div style={{ color:'#64748B', fontSize: "var(--font-xs)" }}>{it.company} • {it.area}</div>
               </div>
               <div style={{ display:'flex', gap:8, alignItems:'center' }}>
                 <Badge tone="down">Δ {it.delta}</Badge>
-                <span style={{ fontSize: 12, color:'#475569' }}>
+                <span style={{ fontSize: "var(--font-xs)", color:'#475569' }}>
                   MS {formatRoundedNumber(it.ms)} • LY {formatRoundedNumber(it.ly)}
                 </span>
               </div>
@@ -1717,7 +1717,7 @@ function AIReplyPro({ text }) {
     );
 
     return (
-      <div style={{ fontSize: 14, lineHeight: 1.6, color: "#0F172A" }}>
+      <div style={{ fontSize: "var(--font-sm)", lineHeight: 1.6, color: "#0F172A" }}>
         <Section title="This month" items={monthLines.map(parseLine).filter(Boolean)} />
         <div style={{ height: 8 }} />
         <Section title="Cumulative" items={cumLines.map(parseLine).filter(Boolean)} />
@@ -1726,7 +1726,7 @@ function AIReplyPro({ text }) {
   }
 
   // Fallback
-  return <div style={{ whiteSpace:'pre-wrap', fontSize:14, lineHeight:1.6 }}>{t}</div>;
+  return <div style={{ whiteSpace:'pre-wrap', fontSize:"var(--font-sm)", lineHeight:1.6 }}>{t}</div>;
 }
 
 // --- Helper: turn the assistant's raw text into a structured shape we can render nicely
@@ -1788,8 +1788,8 @@ function AIReplyPro({ text }) {
 
   if (data.type === "negatives") {
     return (
-      <div style={{ fontSize: 14, lineHeight: 1.6, color: "#0F172A" }}>
-        <div style={{ fontSize: 15, fontWeight: 800, marginBottom: 8 }}>{data.title}</div>
+      <div style={{ fontSize: "var(--font-sm)", lineHeight: 1.6, color: "#0F172A" }}>
+        <div style={{ fontSize: "var(--font-md)", fontWeight: 800, marginBottom: 8 }}>{data.title}</div>
         <div style={{ display: 'grid', gap: 6 }}>
           {data.items.map((it, i) => (
             <div key={i} style={{
@@ -1806,11 +1806,11 @@ function AIReplyPro({ text }) {
               }}>{i+1}</div>
               <div>
                 <div style={{ fontWeight: 800 }}>{it.name}</div>
-                <div style={{ color:'#64748B', fontSize: 12 }}>{it.company} • {it.area}</div>
+                <div style={{ color:'#64748B', fontSize: "var(--font-xs)" }}>{it.company} • {it.area}</div>
               </div>
               <div style={{ display:'flex', gap:8, alignItems:'center' }}>
                 <Badge tone="down">Δ {it.delta}</Badge>
-                <span style={{ fontSize: 12, color:'#475569' }}>
+                <span style={{ fontSize: "var(--font-xs)", color:'#475569' }}>
                   MS {formatRoundedNumber(it.ms)} • LY {formatRoundedNumber(it.ly)}
                 </span>
               </div>
@@ -1847,7 +1847,7 @@ function AIReplyPro({ text }) {
     );
 
     return (
-      <div style={{ fontSize: 14, lineHeight: 1.6, color: "#0F172A" }}>
+      <div style={{ fontSize: "var(--font-sm)", lineHeight: 1.6, color: "#0F172A" }}>
         <Section title="This month" items={data.month} />
         <div style={{ height: 8 }} />
         <Section title="Cumulative" items={data.cum} />
@@ -1856,7 +1856,7 @@ function AIReplyPro({ text }) {
   }
 
   // Fallback plain
-  return <div style={{ whiteSpace:'pre-wrap', fontSize:14, lineHeight:1.6 }}>{data.text}</div>;
+  return <div style={{ whiteSpace:'pre-wrap', fontSize:"var(--font-sm)", lineHeight:1.6 }}>{data.text}</div>;
 }
 
   function handleCsv(file) {
@@ -1898,18 +1898,17 @@ function AIReplyPro({ text }) {
     }, []);
 
   return (
-    <div style={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden', cursor: isResizing ? 'col-resize' : 'default' }}>
+    <div className="app-shell" style={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden', cursor: isResizing ? 'col-resize' : 'default' }}>
       <div style={{ width: `${leftPaneWidthPct}%`, minWidth: '20%', maxWidth: '80%', display: 'flex', flexDirection: 'column', height: '100vh' }}>
 {/* LEFT COLUMN: Map + Search (replace prior inner `div style={{ flex: 1 }}`) */}
 <div style={{ flex: 1, position: 'relative' }}>
   {/* Search box overlay */}
-<div style={{
+<div className="search-overlay" style={{
   position: 'absolute',
   top: 12,
   left: '50%',
   transform: 'translateX(-50%)',   // center horizontally
   zIndex: 999,
-  width: 260,
   borderRadius: 5,
   background: 'rgba(255,255,255,0.4)',   // transparent
   backdropFilter: 'blur(6px)',           // frosted glass
@@ -1957,7 +1956,7 @@ style={{
   padding: '6px 8px',
   borderRadius: 6,
   border: '1px solid transparent',
-  fontSize: 12,
+  fontSize: 'var(--font-sm)',
   background: 'transparent',
   outline: 'none'
 }}
@@ -1989,8 +1988,8 @@ onBlur={e => e.currentTarget.style.border = '1px solid transparent'}
               background: idx === 0 ? 'rgba(14,165,233,0.03)' : 'transparent'
             }}
           >
-            <div style={{ fontSize: 13, color: '#0F172A', fontWeight: 600 }}>{s.label}</div>
-            <div style={{ fontSize: 12, color: '#64748B' }}>{s.type}</div>
+            <div style={{ fontSize: 'var(--font-sm)', color: '#0F172A', fontWeight: 600 }}>{s.label}</div>
+            <div style={{ fontSize: 'var(--font-xs)', color: '#64748B' }}>{s.type}</div>
           </div>
         ))}
       </div>
@@ -2080,9 +2079,9 @@ onBlur={e => e.currentTarget.style.border = '1px solid transparent'}
         >
           <Tooltip direction="top" offset={[0, -10]} opacity={1} className="my-tooltip">
             {/* .. existing tooltip content (unchanged) .. */}
-            <div style={{ minWidth: 220 }}>
-              <div style={{ fontWeight: 700, fontSize: 13 }}>{st.name}</div>
-              <div style={{ color: "#64748B", marginTop: 2 }}>
+            <div style={{ minWidth: 220, maxWidth: 280 }}>
+              <div style={{ fontWeight: 700, fontSize: 'var(--font-sm)' }}>{st.name}</div>
+              <div style={{ color: "#64748B", marginTop: 2, fontSize: 'var(--font-xs)' }}>
                 {st.company} • {st.trading_area}
               </div>
 
@@ -2096,13 +2095,13 @@ onBlur={e => e.currentTarget.style.border = '1px solid transparent'}
                 }}
               >
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                  <div style={{ fontSize: 11, color: "#94A3B8" }}>MS</div>
+                  <div style={{ fontSize: 'var(--font-2xs)', color: "#94A3B8" }}>MS</div>
                   <div style={{ fontWeight: 700, margin: "2px 0" }}>{formatRoundedNumber(st.ms)}</div>
                   <PercentBadge value={calcGrowth(st.ms, st.ms_ly)} />
                 </div>
 
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                  <div style={{ fontSize: 11, color: "#94A3B8" }}>HSD</div>
+                  <div style={{ fontSize: 'var(--font-2xs)', color: "#94A3B8" }}>HSD</div>
                   <div style={{ fontWeight: 700, margin: "2px 0" }}>{formatRoundedNumber(st.hsd)}</div>
                   <PercentBadge value={calcGrowth(st.hsd, st.hsd_ly)} />
                 </div>
@@ -2224,13 +2223,13 @@ onBlur={e => e.currentTarget.style.border = '1px solid transparent'}
     <>
       {/* Header controls near AI */}
       {taSelected ? (
-        <div style={{ position: 'absolute', top: 8, right: 56, zIndex: 1000, display: 'flex', gap: 6, alignItems: 'center' }}>
+        <div style={{ position: 'absolute', top: 8, right: 56, zIndex: 1000, display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
           <button
             onClick={() => setTaView(prev => ({ ...prev, period: "month" }))}
             aria-label="Monthly period"
             title="Month"
             className="nav-btn"
-            style={{ padding:'6px 9px', borderRadius:8, border:'none', background:'#F8FAFC', cursor:'pointer', opacity: taView.period === "month" ? 1 : 0.7, fontWeight: 700, fontSize: 12, lineHeight: 1 }}
+            style={{ padding:'6px 9px', borderRadius:8, border:'none', background:'#F8FAFC', cursor:'pointer', opacity: taView.period === "month" ? 1 : 0.7, fontWeight: 700, fontSize: 'var(--font-xs)', lineHeight: 1.2 }}
           >
             Month
           </button>
@@ -2239,7 +2238,7 @@ onBlur={e => e.currentTarget.style.border = '1px solid transparent'}
             aria-label="Cumulative period"
             title="Cumulative"
             className="nav-btn"
-            style={{ padding:'6px 9px', borderRadius:8, border:'none', background:'#F8FAFC', cursor:'pointer', opacity: taView.period === "cumulative" ? 1 : 0.7, fontWeight: 700, fontSize: 12, lineHeight: 1 }}
+            style={{ padding:'6px 9px', borderRadius:8, border:'none', background:'#F8FAFC', cursor:'pointer', opacity: taView.period === "cumulative" ? 1 : 0.7, fontWeight: 700, fontSize: 'var(--font-xs)', lineHeight: 1.2 }}
           >
             Cumulative
           </button>

@@ -786,6 +786,28 @@ function MarketShareScopeSelector({ value, onChange }) {
   );
 }
 
+function SimplePeriodSelector({ value, onChange }) {
+  return (
+    <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+      <label style={{ color: "#64748B", fontSize: 13, fontWeight: 600 }}>Period</label>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        style={{
+          padding: "6px 10px",
+          borderRadius: 8,
+          border: "1px solid #E6EEF3",
+          background: "#fff",
+          fontSize: 13,
+        }}
+      >
+        <option value="month">Month</option>
+        <option value="cumulative">Cumulative</option>
+      </select>
+    </div>
+  );
+}
+
 function CompanyFilterSelector({ value, onChange, companies }) {
   return (
     <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
@@ -1183,6 +1205,7 @@ const [latestMonth, setLatestMonth] = useState(() => {
   const [pageIndex, setPageIndex] = useState(0);
   const [iocLossRankBy, setIocLossRankBy] = useState("share");
   const [marketShareScope, setMarketShareScope] = useState("industry");
+  const [classMixVolumeMode, setClassMixVolumeMode] = useState("month");
   const [classOfMarketFilter, setClassOfMarketFilter] = useState("all");
   const [growthCompanyFilter, setGrowthCompanyFilter] = useState("all");
   const [topCompanyFilter, setTopCompanyFilter] = useState("all");
@@ -2498,24 +2521,38 @@ onBlur={e => e.currentTarget.style.border = '1px solid transparent'}
               );
             }
             if (pageIndex === 13) {
-              const classMixRows = buildClassOfMarketParticipationRows(stations, marketShareScope);
-              const classMixCompanyTotals = buildClassOfMarketCompanyTotals(stations, marketShareScope);
+              const classMixRows = buildClassOfMarketParticipationRows(stations, marketShareScope, {
+                mode: classMixVolumeMode,
+                startMonth,
+                endMonth: latestMonth,
+              });
+              const classMixCompanyTotals = buildClassOfMarketCompanyTotals(stations, marketShareScope, {
+                mode: classMixVolumeMode,
+                startMonth,
+                endMonth: latestMonth,
+              });
+              const periodLabel = classMixVolumeMode === "cumulative"
+                ? `Apr to ${formatMonth(latestMonth)}`
+                : formatMonth(latestMonth);
               return (
                 <div style={{ marginTop: 14 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 8 }}>
                     <h3 style={{ margin: 0 }}>Class of Market</h3>
-                    <MarketShareScopeSelector value={marketShareScope} onChange={setMarketShareScope} />
+                    <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+                      <SimplePeriodSelector value={classMixVolumeMode} onChange={setClassMixVolumeMode} />
+                      <MarketShareScopeSelector value={marketShareScope} onChange={setMarketShareScope} />
+                    </div>
                   </div>
                   <PageContextLine>
-                    {`${marketShareScope === "psu" ? "PSU" : "Industry"} • ${formatMonth(latestMonth)} • Participation is each company's share of outlets within that class`}
+                    {`${marketShareScope === "psu" ? "PSU" : "Industry"} • ${periodLabel} • Participation is each company's share of outlets within that class`}
                   </PageContextLine>
                   <ClassOfMarketParticipationTable
                     rows={classMixRows}
-                    label="RO count and participation by class"
+                    label={`RO count, participation and volume by class (${classMixVolumeMode === "cumulative" ? "Cumulative" : "Month"})`}
                   />
                   <ClassOfMarketCompanyTotalsTable
                     rows={classMixCompanyTotals}
-                    label="Company subtotal across all classes"
+                    label={`Company subtotal across all classes (${classMixVolumeMode === "cumulative" ? "Cumulative" : "Month"})`}
                   />
                 </div>
               );

@@ -195,7 +195,11 @@ export function buildCumulativeGrowthRowsHSD(stations, startMonth, endMonth) {
   });
 }
 
-export function buildClassOfMarketParticipationRows(stations, scope = "industry") {
+export function buildClassOfMarketParticipationRows(
+  stations,
+  scope = "industry",
+  { mode = "month", startMonth = "", endMonth = "" } = {}
+) {
   const filteredStations = (stations || []).filter((station) => {
     const company = (station.company || "").toString().trim().toUpperCase();
     if (scope === "psu") return PSU_COMPANIES.has(company);
@@ -207,21 +211,26 @@ export function buildClassOfMarketParticipationRows(stations, scope = "industry"
     const className = (station.class_of_market || "").toString().trim().toUpperCase();
     const company = (station.company || "").toString().trim().toUpperCase();
     if (!className || className === "#N/A" || !company) return;
+    const volumes = mode === "cumulative"
+      ? cumulativeForOutletRows(station.rows || [], startMonth, endMonth)
+      : { ms: Number(station.ms || 0), hsd: Number(station.hsd || 0) };
+    const msVolume = Number(volumes.ms || 0);
+    const hsdVolume = Number(volumes.hsd || 0);
 
     if (!byClass[className]) {
       byClass[className] = { total: 0, totalMs: 0, totalHsd: 0, companies: {} };
     }
 
     byClass[className].total += 1;
-    byClass[className].totalMs += Number(station.ms || 0);
-    byClass[className].totalHsd += Number(station.hsd || 0);
+    byClass[className].totalMs += msVolume;
+    byClass[className].totalHsd += hsdVolume;
 
     if (!byClass[className].companies[company]) {
       byClass[className].companies[company] = { count: 0, msVolume: 0, hsdVolume: 0 };
     }
     byClass[className].companies[company].count += 1;
-    byClass[className].companies[company].msVolume += Number(station.ms || 0);
-    byClass[className].companies[company].hsdVolume += Number(station.hsd || 0);
+    byClass[className].companies[company].msVolume += msVolume;
+    byClass[className].companies[company].hsdVolume += hsdVolume;
   });
 
   return Object.entries(byClass)
@@ -258,7 +267,11 @@ export function buildClassOfMarketParticipationRows(stations, scope = "industry"
     });
 }
 
-export function buildClassOfMarketCompanyTotals(stations, scope = "industry") {
+export function buildClassOfMarketCompanyTotals(
+  stations,
+  scope = "industry",
+  { mode = "month", startMonth = "", endMonth = "" } = {}
+) {
   const filteredStations = (stations || []).filter((station) => {
     const company = (station.company || "").toString().trim().toUpperCase();
     if (scope === "psu") return PSU_COMPANIES.has(company);
@@ -269,13 +282,18 @@ export function buildClassOfMarketCompanyTotals(stations, scope = "industry") {
   filteredStations.forEach((station) => {
     const company = (station.company || "").toString().trim().toUpperCase();
     if (!company) return;
+    const volumes = mode === "cumulative"
+      ? cumulativeForOutletRows(station.rows || [], startMonth, endMonth)
+      : { ms: Number(station.ms || 0), hsd: Number(station.hsd || 0) };
+    const msVolume = Number(volumes.ms || 0);
+    const hsdVolume = Number(volumes.hsd || 0);
     if (!totals[company]) {
       totals[company] = { company, roCount: 0, msVolume: 0, hsdVolume: 0, totalVolume: 0 };
     }
     totals[company].roCount += 1;
-    totals[company].msVolume += Number(station.ms || 0);
-    totals[company].hsdVolume += Number(station.hsd || 0);
-    totals[company].totalVolume += Number(station.ms || 0) + Number(station.hsd || 0);
+    totals[company].msVolume += msVolume;
+    totals[company].hsdVolume += hsdVolume;
+    totals[company].totalVolume += msVolume + hsdVolume;
   });
 
   return Object.values(totals)

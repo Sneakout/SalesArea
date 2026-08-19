@@ -556,8 +556,8 @@ function MarketShareTable({ rows, label }) {
                 }}>{(r.share_change >= 0 ? '+' : '') + Number(r.share_change || 0).toFixed(2)} pp</td>
                 <td style={{
                   padding: '8px 6px',
-                  background: (r.mop_up || 0) >= 0 ? '#ECFDF5' : '#FEF2F2',
-                  color: (r.mop_up || 0) >= 0 ? '#064E3B' : '#7F1D1D',
+                  background: (r.mop_up || 0) <= 0 ? '#ECFDF5' : '#FEF2F2',
+                  color: (r.mop_up || 0) <= 0 ? '#064E3B' : '#7F1D1D',
                   fontWeight: 700
                 }}>{formatRoundedNumber(r.mop_up)}</td>
               </tr>

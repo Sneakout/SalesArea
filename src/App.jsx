@@ -877,11 +877,14 @@ function ClassOfMarketParticipationTable({ rows, label }) {
               <th style={{ padding: "8px 6px" }}>Company</th>
               <th style={{ padding: "8px 6px" }}>RO count</th>
               <th style={{ padding: "8px 6px" }}>Market participation</th>
+              <th style={{ padding: "8px 6px" }}>MS volume</th>
+              <th style={{ padding: "8px 6px" }}>HSD volume</th>
+              <th style={{ padding: "8px 6px" }}>Total volume</th>
             </tr>
           </thead>
           <tbody>
             {(!rows || rows.length === 0) ? (
-              <tr><td colSpan={4} style={{ padding: 16, color: "#64748B" }}>No data.</td></tr>
+              <tr><td colSpan={7} style={{ padding: 16, color: "#64748B" }}>No data.</td></tr>
             ) : rows.map((row, index) => (
               <tr
                 key={`${row.className}-${row.company}-${index}`}
@@ -895,6 +898,9 @@ function ClassOfMarketParticipationTable({ rows, label }) {
                 <td style={{ padding: "8px 6px" }}>{row.company}</td>
                 <td style={{ padding: "8px 6px", fontWeight: 700 }}>{formatRoundedNumber(row.roCount)}</td>
                 <td style={{ padding: "8px 6px" }}>{Number(row.participation || 0).toFixed(2)}%</td>
+                <td style={{ padding: "8px 6px", fontWeight: 700 }}>{formatRoundedNumber(row.msVolume)}</td>
+                <td style={{ padding: "8px 6px", fontWeight: 700 }}>{formatRoundedNumber(row.hsdVolume)}</td>
+                <td style={{ padding: "8px 6px", fontWeight: 700 }}>{formatRoundedNumber(row.totalVolume)}</td>
               </tr>
             ))}
           </tbody>

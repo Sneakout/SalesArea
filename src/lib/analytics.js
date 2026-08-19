@@ -209,11 +209,19 @@ export function buildClassOfMarketParticipationRows(stations, scope = "industry"
     if (!className || className === "#N/A" || !company) return;
 
     if (!byClass[className]) {
-      byClass[className] = { total: 0, companies: {} };
+      byClass[className] = { total: 0, totalMs: 0, totalHsd: 0, companies: {} };
     }
 
     byClass[className].total += 1;
-    byClass[className].companies[company] = (byClass[className].companies[company] || 0) + 1;
+    byClass[className].totalMs += Number(station.ms || 0);
+    byClass[className].totalHsd += Number(station.hsd || 0);
+
+    if (!byClass[className].companies[company]) {
+      byClass[className].companies[company] = { count: 0, msVolume: 0, hsdVolume: 0 };
+    }
+    byClass[className].companies[company].count += 1;
+    byClass[className].companies[company].msVolume += Number(station.ms || 0);
+    byClass[className].companies[company].hsdVolume += Number(station.hsd || 0);
   });
 
   return Object.entries(byClass)
@@ -221,11 +229,14 @@ export function buildClassOfMarketParticipationRows(stations, scope = "industry"
     .flatMap(([className, details]) => {
       const companyRows = Object.entries(details.companies)
         .sort(([a], [b]) => a.localeCompare(b))
-        .map(([company, count]) => ({
+        .map(([company, values]) => ({
           className,
           company,
-          roCount: count,
-          participation: details.total ? (count / details.total) * 100 : 0,
+          roCount: values.count,
+          participation: details.total ? (values.count / details.total) * 100 : 0,
+          msVolume: values.msVolume,
+          hsdVolume: values.hsdVolume,
+          totalVolume: values.msVolume + values.hsdVolume,
           classTotal: details.total,
           isTotal: false,
         }));
@@ -237,6 +248,9 @@ export function buildClassOfMarketParticipationRows(stations, scope = "industry"
           company: "Total",
           roCount: details.total,
           participation: 100,
+          msVolume: details.totalMs,
+          hsdVolume: details.totalHsd,
+          totalVolume: details.totalMs + details.totalHsd,
           classTotal: details.total,
           isTotal: true,
         },

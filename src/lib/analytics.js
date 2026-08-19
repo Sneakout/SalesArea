@@ -195,6 +195,55 @@ export function buildCumulativeGrowthRowsHSD(stations, startMonth, endMonth) {
   });
 }
 
+export function buildClassOfMarketParticipationRows(stations, scope = "industry") {
+  const filteredStations = (stations || []).filter((station) => {
+    const company = (station.company || "").toString().trim().toUpperCase();
+    if (scope === "psu") return PSU_COMPANIES.has(company);
+    return true;
+  });
+
+  const byClass = {};
+  filteredStations.forEach((station) => {
+    const className = (station.class_of_market || "").toString().trim().toUpperCase();
+    const company = (station.company || "").toString().trim().toUpperCase();
+    if (!className || className === "#N/A" || !company) return;
+
+    if (!byClass[className]) {
+      byClass[className] = { total: 0, companies: {} };
+    }
+
+    byClass[className].total += 1;
+    byClass[className].companies[company] = (byClass[className].companies[company] || 0) + 1;
+  });
+
+  return Object.entries(byClass)
+    .sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
+    .flatMap(([className, details]) => {
+      const companyRows = Object.entries(details.companies)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([company, count]) => ({
+          className,
+          company,
+          roCount: count,
+          participation: details.total ? (count / details.total) * 100 : 0,
+          classTotal: details.total,
+          isTotal: false,
+        }));
+
+      return [
+        ...companyRows,
+        {
+          className,
+          company: "Total",
+          roCount: details.total,
+          participation: 100,
+          classTotal: details.total,
+          isTotal: true,
+        },
+      ];
+    });
+}
+
 export function sortRowsByGrowth(rows, direction) {
   const copy = [...(rows || [])];
   copy.sort((a, b) => direction === "asc" ? a.growth - b.growth : b.growth - a.growth);

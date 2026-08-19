@@ -6,6 +6,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import {
   buildCommissioningData,
+  buildClassOfMarketParticipationRows,
   TA_METRIC_ORDER,
   buildProjectionRows,
   buildCumulativeGrowthRowsHSD,
@@ -37,6 +38,7 @@ const STORAGE_KEY = "fuelmap_records_v5";
 const LEGACY_STORAGE_KEYS = ["fuelmap_records_v4"];
 const ANALYSIS_TABS = [
   { index: 12, label: "Top", title: "Highest selling outlets (selected month)", tone: "indigo" },
+  { index: 13, label: "Class mix", title: "RO count and company participation by class of market", tone: "cyan" },
   { index: 2, label: "+M", title: "Positive growth (selected month)", tone: "sky" },
   { index: 3, label: "+C", title: "Positive growth (cumulative Apr → selected)", tone: "green" },
   { index: 4, label: "−M", title: "Negative growth (selected month)", tone: "red" },
@@ -854,6 +856,45 @@ function CountSummaryTable({ rows, label }) {
               <tr key={index} style={{ borderTop: "1px solid #F1F5F9" }}>
                 <td style={{ padding: "8px 6px" }}>{row.company}</td>
                 <td style={{ padding: "8px 6px", fontWeight: 700 }}>{row.count}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+function ClassOfMarketParticipationTable({ rows, label }) {
+  return (
+    <div style={{ marginTop: 10 }}>
+      <h4 style={{ margin: "0 0 6px 0" }}>{label}</h4>
+      <div style={{ background: "#fff", borderRadius: 8, padding: 12, boxShadow: "0 1px 2px rgba(2,6,23,0.04)" }}>
+        <table style={{ width: "100%", fontSize: 13, borderCollapse: "collapse" }}>
+          <thead style={{ color: "#94A3B8", textAlign: "left" }}>
+            <tr>
+              <th style={{ padding: "8px 6px" }}>Class of market</th>
+              <th style={{ padding: "8px 6px" }}>Company</th>
+              <th style={{ padding: "8px 6px" }}>RO count</th>
+              <th style={{ padding: "8px 6px" }}>Market participation</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(!rows || rows.length === 0) ? (
+              <tr><td colSpan={4} style={{ padding: 16, color: "#64748B" }}>No data.</td></tr>
+            ) : rows.map((row, index) => (
+              <tr
+                key={`${row.className}-${row.company}-${index}`}
+                style={{
+                  borderTop: "1px solid #F1F5F9",
+                  fontWeight: row.isTotal ? 700 : 400,
+                  background: row.isTotal ? "rgba(248,250,252,0.8)" : "transparent",
+                }}
+              >
+                <td style={{ padding: "8px 6px" }}>{row.className}</td>
+                <td style={{ padding: "8px 6px" }}>{row.company}</td>
+                <td style={{ padding: "8px 6px", fontWeight: 700 }}>{formatRoundedNumber(row.roCount)}</td>
+                <td style={{ padding: "8px 6px" }}>{Number(row.participation || 0).toFixed(2)}%</td>
               </tr>
             ))}
           </tbody>
@@ -2405,6 +2446,24 @@ onBlur={e => e.currentTarget.style.border = '1px solid transparent'}
                   <PageContextLine>{formatMonth(latestMonth)}</PageContextLine>
                   <GrowthTable rows={topRowsMS} label="Top 20 MS Outlets" />
                   <GrowthTable rows={topRowsHSD} label="Top 20 HSD Outlets" />
+                </div>
+              );
+            }
+            if (pageIndex === 13) {
+              const classMixRows = buildClassOfMarketParticipationRows(stations, marketShareScope);
+              return (
+                <div style={{ marginTop: 14 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 8 }}>
+                    <h3 style={{ margin: 0 }}>Class of Market</h3>
+                    <MarketShareScopeSelector value={marketShareScope} onChange={setMarketShareScope} />
+                  </div>
+                  <PageContextLine>
+                    {`${marketShareScope === "psu" ? "PSU" : "Industry"} • ${formatMonth(latestMonth)} • Participation is each company's share of outlets within that class`}
+                  </PageContextLine>
+                  <ClassOfMarketParticipationTable
+                    rows={classMixRows}
+                    label="RO count and participation by class"
+                  />
                 </div>
               );
             }

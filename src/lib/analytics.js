@@ -298,19 +298,34 @@ export function buildClassOfMarketCompanyTotals(
 
   return Object.values(totals)
     .sort((a, b) => a.company.localeCompare(b.company))
-    .concat([
-      Object.values(totals).reduce(
-        (acc, row) => ({
-          company: "Total",
-          roCount: acc.roCount + row.roCount,
-          msVolume: acc.msVolume + row.msVolume,
-          hsdVolume: acc.hsdVolume + row.hsdVolume,
-          totalVolume: acc.totalVolume + row.totalVolume,
-          isTotal: true,
-        }),
-        { company: "Total", roCount: 0, msVolume: 0, hsdVolume: 0, totalVolume: 0, isTotal: true }
-      ),
-    ]);
+    .reduce(
+      (acc, row) => {
+        acc.totalRoCount += row.roCount;
+        acc.rows.push(row);
+        return acc;
+      },
+      { rows: [], totalRoCount: 0 }
+    );
+}
+
+export function finalizeClassOfMarketCompanyTotals(summary) {
+  const rows = (summary?.rows || []).map((row) => ({
+    ...row,
+    participation: summary?.totalRoCount ? (row.roCount / summary.totalRoCount) * 100 : 0,
+  }));
+  const totalRow = rows.reduce(
+    (acc, row) => ({
+      company: "Total",
+      roCount: acc.roCount + row.roCount,
+      participation: 100,
+      msVolume: acc.msVolume + row.msVolume,
+      hsdVolume: acc.hsdVolume + row.hsdVolume,
+      totalVolume: acc.totalVolume + row.totalVolume,
+      isTotal: true,
+    }),
+    { company: "Total", roCount: 0, participation: 100, msVolume: 0, hsdVolume: 0, totalVolume: 0, isTotal: true }
+  );
+  return [...rows, totalRow];
 }
 
 export function sortRowsByGrowth(rows, direction) {

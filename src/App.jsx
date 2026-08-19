@@ -8,6 +8,7 @@ import {
   buildCommissioningData,
   buildClassOfMarketParticipationRows,
   buildClassOfMarketCompanyTotals,
+  finalizeClassOfMarketCompanyTotals,
   TA_METRIC_ORDER,
   buildProjectionRows,
   buildCumulativeGrowthRowsHSD,
@@ -944,14 +945,15 @@ function ClassOfMarketCompanyTotalsTable({ rows, label }) {
           <thead style={{ color: "#94A3B8" }}>
             <tr>
               <th style={textCell}>Company</th>
-              <th style={numberCell}>Total outlets</th>
+              <th style={numberCell}>Retail Outlet - Count</th>
+              <th style={numberCell}>Market participation</th>
               <th style={numberCell}>MS volume</th>
               <th style={numberCell}>HSD volume</th>
             </tr>
           </thead>
           <tbody>
             {(!rows || rows.length === 0) ? (
-              <tr><td colSpan={4} style={{ padding: 16, color: "#64748B" }}>No data.</td></tr>
+              <tr><td colSpan={5} style={{ padding: 16, color: "#64748B" }}>No data.</td></tr>
             ) : rows.map((row, index) => (
               <tr
                 key={`${row.company}-${index}`}
@@ -963,6 +965,7 @@ function ClassOfMarketCompanyTotalsTable({ rows, label }) {
               >
                 <td style={textCell}>{row.company}</td>
                 <td style={{ ...numberCell, fontWeight: 700 }}>{formatRoundedNumber(row.roCount)}</td>
+                <td style={numberCell}>{Number(row.participation || 0).toFixed(2)}%</td>
                 <td style={{ ...numberCell, fontWeight: 700 }}>{formatRoundedNumber(row.msVolume)}</td>
                 <td style={{ ...numberCell, fontWeight: 700 }}>{formatRoundedNumber(row.hsdVolume)}</td>
               </tr>
@@ -2526,11 +2529,13 @@ onBlur={e => e.currentTarget.style.border = '1px solid transparent'}
                 startMonth,
                 endMonth: latestMonth,
               });
-              const classMixCompanyTotals = buildClassOfMarketCompanyTotals(stations, marketShareScope, {
-                mode: classMixVolumeMode,
-                startMonth,
-                endMonth: latestMonth,
-              });
+              const classMixCompanyTotals = finalizeClassOfMarketCompanyTotals(
+                buildClassOfMarketCompanyTotals(stations, marketShareScope, {
+                  mode: classMixVolumeMode,
+                  startMonth,
+                  endMonth: latestMonth,
+                })
+              );
               const periodLabel = classMixVolumeMode === "cumulative"
                 ? `Apr to ${formatMonth(latestMonth)}`
                 : formatMonth(latestMonth);

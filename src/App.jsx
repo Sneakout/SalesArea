@@ -7,6 +7,7 @@ import "leaflet/dist/leaflet.css";
 import {
   buildCommissioningData,
   buildClassOfMarketParticipationRows,
+  buildClassOfMarketCompanyTotals,
   TA_METRIC_ORDER,
   buildProjectionRows,
   buildCumulativeGrowthRowsHSD,
@@ -866,20 +867,22 @@ function CountSummaryTable({ rows, label }) {
 }
 
 function ClassOfMarketParticipationTable({ rows, label }) {
+  const numberCell = { padding: "8px 6px", textAlign: "right", whiteSpace: "nowrap" };
+  const textCell = { padding: "8px 6px", textAlign: "left" };
   return (
     <div style={{ marginTop: 10 }}>
       <h4 style={{ margin: "0 0 6px 0" }}>{label}</h4>
-      <div style={{ background: "#fff", borderRadius: 8, padding: 12, boxShadow: "0 1px 2px rgba(2,6,23,0.04)" }}>
-        <table style={{ width: "100%", fontSize: 13, borderCollapse: "collapse" }}>
-          <thead style={{ color: "#94A3B8", textAlign: "left" }}>
+      <div style={{ background: "#fff", borderRadius: 8, padding: 12, boxShadow: "0 1px 2px rgba(2,6,23,0.04)", overflowX: "auto" }}>
+        <table style={{ width: "100%", minWidth: 920, fontSize: 13, borderCollapse: "collapse" }}>
+          <thead style={{ color: "#94A3B8" }}>
             <tr>
-              <th style={{ padding: "8px 6px" }}>Class of market</th>
-              <th style={{ padding: "8px 6px" }}>Company</th>
-              <th style={{ padding: "8px 6px" }}>RO count</th>
-              <th style={{ padding: "8px 6px" }}>Market participation</th>
-              <th style={{ padding: "8px 6px" }}>MS volume</th>
-              <th style={{ padding: "8px 6px" }}>HSD volume</th>
-              <th style={{ padding: "8px 6px" }}>Total volume</th>
+              <th style={textCell}>Class of market</th>
+              <th style={textCell}>Company</th>
+              <th style={numberCell}>RO count</th>
+              <th style={numberCell}>Market participation</th>
+              <th style={numberCell}>MS volume</th>
+              <th style={numberCell}>HSD volume</th>
+              <th style={numberCell}>Total volume</th>
             </tr>
           </thead>
           <tbody>
@@ -894,13 +897,56 @@ function ClassOfMarketParticipationTable({ rows, label }) {
                   background: row.isTotal ? "rgba(248,250,252,0.8)" : "transparent",
                 }}
               >
-                <td style={{ padding: "8px 6px" }}>{row.className}</td>
-                <td style={{ padding: "8px 6px" }}>{row.company}</td>
-                <td style={{ padding: "8px 6px", fontWeight: 700 }}>{formatRoundedNumber(row.roCount)}</td>
-                <td style={{ padding: "8px 6px" }}>{Number(row.participation || 0).toFixed(2)}%</td>
-                <td style={{ padding: "8px 6px", fontWeight: 700 }}>{formatRoundedNumber(row.msVolume)}</td>
-                <td style={{ padding: "8px 6px", fontWeight: 700 }}>{formatRoundedNumber(row.hsdVolume)}</td>
-                <td style={{ padding: "8px 6px", fontWeight: 700 }}>{formatRoundedNumber(row.totalVolume)}</td>
+                <td style={textCell}>{row.className}</td>
+                <td style={textCell}>{row.company}</td>
+                <td style={{ ...numberCell, fontWeight: 700 }}>{formatRoundedNumber(row.roCount)}</td>
+                <td style={numberCell}>{Number(row.participation || 0).toFixed(2)}%</td>
+                <td style={{ ...numberCell, fontWeight: 700 }}>{formatRoundedNumber(row.msVolume)}</td>
+                <td style={{ ...numberCell, fontWeight: 700 }}>{formatRoundedNumber(row.hsdVolume)}</td>
+                <td style={{ ...numberCell, fontWeight: 700 }}>{formatRoundedNumber(row.totalVolume)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+function ClassOfMarketCompanyTotalsTable({ rows, label }) {
+  const numberCell = { padding: "8px 6px", textAlign: "right", whiteSpace: "nowrap" };
+  const textCell = { padding: "8px 6px", textAlign: "left" };
+  return (
+    <div style={{ marginTop: 16 }}>
+      <h4 style={{ margin: "0 0 6px 0" }}>{label}</h4>
+      <div style={{ background: "#fff", borderRadius: 8, padding: 12, boxShadow: "0 1px 2px rgba(2,6,23,0.04)", overflowX: "auto" }}>
+        <table style={{ width: "100%", minWidth: 680, fontSize: 13, borderCollapse: "collapse" }}>
+          <thead style={{ color: "#94A3B8" }}>
+            <tr>
+              <th style={textCell}>Company</th>
+              <th style={numberCell}>Total outlets</th>
+              <th style={numberCell}>MS volume</th>
+              <th style={numberCell}>HSD volume</th>
+              <th style={numberCell}>Total volume</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(!rows || rows.length === 0) ? (
+              <tr><td colSpan={5} style={{ padding: 16, color: "#64748B" }}>No data.</td></tr>
+            ) : rows.map((row, index) => (
+              <tr
+                key={`${row.company}-${index}`}
+                style={{
+                  borderTop: "1px solid #F1F5F9",
+                  fontWeight: row.isTotal ? 700 : 400,
+                  background: row.isTotal ? "rgba(248,250,252,0.8)" : "transparent",
+                }}
+              >
+                <td style={textCell}>{row.company}</td>
+                <td style={{ ...numberCell, fontWeight: 700 }}>{formatRoundedNumber(row.roCount)}</td>
+                <td style={{ ...numberCell, fontWeight: 700 }}>{formatRoundedNumber(row.msVolume)}</td>
+                <td style={{ ...numberCell, fontWeight: 700 }}>{formatRoundedNumber(row.hsdVolume)}</td>
+                <td style={{ ...numberCell, fontWeight: 700 }}>{formatRoundedNumber(row.totalVolume)}</td>
               </tr>
             ))}
           </tbody>
@@ -2457,6 +2503,7 @@ onBlur={e => e.currentTarget.style.border = '1px solid transparent'}
             }
             if (pageIndex === 13) {
               const classMixRows = buildClassOfMarketParticipationRows(stations, marketShareScope);
+              const classMixCompanyTotals = buildClassOfMarketCompanyTotals(stations, marketShareScope);
               return (
                 <div style={{ marginTop: 14 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 8 }}>
@@ -2469,6 +2516,10 @@ onBlur={e => e.currentTarget.style.border = '1px solid transparent'}
                   <ClassOfMarketParticipationTable
                     rows={classMixRows}
                     label="RO count and participation by class"
+                  />
+                  <ClassOfMarketCompanyTotalsTable
+                    rows={classMixCompanyTotals}
+                    label="Company subtotal across all classes"
                   />
                 </div>
               );

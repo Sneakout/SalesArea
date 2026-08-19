@@ -258,6 +258,43 @@ export function buildClassOfMarketParticipationRows(stations, scope = "industry"
     });
 }
 
+export function buildClassOfMarketCompanyTotals(stations, scope = "industry") {
+  const filteredStations = (stations || []).filter((station) => {
+    const company = (station.company || "").toString().trim().toUpperCase();
+    if (scope === "psu") return PSU_COMPANIES.has(company);
+    return true;
+  });
+
+  const totals = {};
+  filteredStations.forEach((station) => {
+    const company = (station.company || "").toString().trim().toUpperCase();
+    if (!company) return;
+    if (!totals[company]) {
+      totals[company] = { company, roCount: 0, msVolume: 0, hsdVolume: 0, totalVolume: 0 };
+    }
+    totals[company].roCount += 1;
+    totals[company].msVolume += Number(station.ms || 0);
+    totals[company].hsdVolume += Number(station.hsd || 0);
+    totals[company].totalVolume += Number(station.ms || 0) + Number(station.hsd || 0);
+  });
+
+  return Object.values(totals)
+    .sort((a, b) => a.company.localeCompare(b.company))
+    .concat([
+      Object.values(totals).reduce(
+        (acc, row) => ({
+          company: "Total",
+          roCount: acc.roCount + row.roCount,
+          msVolume: acc.msVolume + row.msVolume,
+          hsdVolume: acc.hsdVolume + row.hsdVolume,
+          totalVolume: acc.totalVolume + row.totalVolume,
+          isTotal: true,
+        }),
+        { company: "Total", roCount: 0, msVolume: 0, hsdVolume: 0, totalVolume: 0, isTotal: true }
+      ),
+    ]);
+}
+
 export function sortRowsByGrowth(rows, direction) {
   const copy = [...(rows || [])];
   copy.sort((a, b) => direction === "asc" ? a.growth - b.growth : b.growth - a.growth);

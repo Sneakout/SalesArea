@@ -882,12 +882,11 @@ function ClassOfMarketParticipationTable({ rows, label }) {
               <th style={numberCell}>Market participation</th>
               <th style={numberCell}>MS volume</th>
               <th style={numberCell}>HSD volume</th>
-              <th style={numberCell}>Total volume</th>
             </tr>
           </thead>
           <tbody>
             {(!rows || rows.length === 0) ? (
-              <tr><td colSpan={7} style={{ padding: 16, color: "#64748B" }}>No data.</td></tr>
+              <tr><td colSpan={6} style={{ padding: 16, color: "#64748B" }}>No data.</td></tr>
             ) : rows.map((row, index) => (
               <tr
                 key={`${row.className}-${row.company}-${index}`}
@@ -903,7 +902,6 @@ function ClassOfMarketParticipationTable({ rows, label }) {
                 <td style={numberCell}>{Number(row.participation || 0).toFixed(2)}%</td>
                 <td style={{ ...numberCell, fontWeight: 700 }}>{formatRoundedNumber(row.msVolume)}</td>
                 <td style={{ ...numberCell, fontWeight: 700 }}>{formatRoundedNumber(row.hsdVolume)}</td>
-                <td style={{ ...numberCell, fontWeight: 700 }}>{formatRoundedNumber(row.totalVolume)}</td>
               </tr>
             ))}
           </tbody>
@@ -927,12 +925,11 @@ function ClassOfMarketCompanyTotalsTable({ rows, label }) {
               <th style={numberCell}>Total outlets</th>
               <th style={numberCell}>MS volume</th>
               <th style={numberCell}>HSD volume</th>
-              <th style={numberCell}>Total volume</th>
             </tr>
           </thead>
           <tbody>
             {(!rows || rows.length === 0) ? (
-              <tr><td colSpan={5} style={{ padding: 16, color: "#64748B" }}>No data.</td></tr>
+              <tr><td colSpan={4} style={{ padding: 16, color: "#64748B" }}>No data.</td></tr>
             ) : rows.map((row, index) => (
               <tr
                 key={`${row.company}-${index}`}
@@ -946,7 +943,6 @@ function ClassOfMarketCompanyTotalsTable({ rows, label }) {
                 <td style={{ ...numberCell, fontWeight: 700 }}>{formatRoundedNumber(row.roCount)}</td>
                 <td style={{ ...numberCell, fontWeight: 700 }}>{formatRoundedNumber(row.msVolume)}</td>
                 <td style={{ ...numberCell, fontWeight: 700 }}>{formatRoundedNumber(row.hsdVolume)}</td>
-                <td style={{ ...numberCell, fontWeight: 700 }}>{formatRoundedNumber(row.totalVolume)}</td>
               </tr>
             ))}
           </tbody>

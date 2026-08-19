@@ -15,7 +15,6 @@ export function VolumeChange({ curr, prev }) {
         background: positive ? "#ECFDF5" : "#FEF2F2",
         color: positive ? "#064E3B" : "#7F1D1D",
         fontWeight: 700,
-        fontSize: "var(--font-xs)",
       }}
     >
       {sign}
@@ -36,7 +35,6 @@ export function ShareChange({ value }) {
         background: positive ? "#ECFDF5" : "#FEE2E2",
         color: positive ? "#064E3B" : "#7F1D1D",
         fontWeight: 700,
-        fontSize: "var(--font-xs)",
       }}
     >
       {positive ? "▲" : "▼"} {Math.abs(value).toFixed(2)} pp
@@ -51,18 +49,25 @@ export function TradingAreaPerformanceTable({
   includeCompany = false,
   metric = "combined",
 }) {
-  const cellStyle = { padding: "0.62rem 0.5rem", whiteSpace: "nowrap", verticalAlign: "middle" };
-  const nameCellStyle = { ...cellStyle, whiteSpace: "normal", minWidth: "10rem" };
+  const cellStyle = { padding: "8px 8px", whiteSpace: "nowrap", verticalAlign: "middle" };
+  const nameCellStyle = { ...cellStyle, whiteSpace: "normal" };
   const isCombined = metric === "combined";
   const isMS = metric === "ms";
   const metricLabel = isMS ? "MS" : "HSD";
 
   return (
     <div style={{ marginTop: 20 }}>
-      <h3 style={{ margin: "0 0 8px 0", fontSize: "var(--font-lg)" }}>{label}</h3>
-      <div className="data-card">
-        <table className="data-table" style={{ tableLayout: "auto" }}>
-          <thead>
+      <h3 style={{ margin: "0 0 8px 0" }}>{label}</h3>
+      <div
+        style={{
+          background: "#fff",
+          borderRadius: 8,
+          padding: 12,
+          boxShadow: "0 1px 2px rgba(2,6,23,0.04)",
+        }}
+      >
+        <table style={{ width: "100%", fontSize: 13, borderCollapse: "collapse", tableLayout: "auto" }}>
+          <thead style={{ color: "#94A3B8", textAlign: "left" }}>
             <tr>
               <th style={nameCellStyle}>{firstColumnLabel}</th>
               {includeCompany ? <th style={cellStyle}>Company</th> : null}

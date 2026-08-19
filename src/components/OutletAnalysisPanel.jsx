@@ -71,11 +71,11 @@ export default function OutletAnalysisPanel({
         exit={{ opacity: 0, y: -12 }}
         transition={{ duration: 0.3 }}
       >
-        <div className="panel-content">
+        <div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
             <div>
-              <h2 style={{ margin: 0, fontSize: "var(--font-xl)" }}>{selected?.name}</h2>
-              <div style={{ color: "#64748B", marginTop: 6, fontSize: "var(--font-sm)" }}>
+              <h2 style={{ margin: 0 }}>{selected?.name}</h2>
+              <div style={{ color: "#64748B", marginTop: 6 }}>
                 {selected?.company} • {selected?.trading_area}
               </div>
             </div>
@@ -124,14 +124,14 @@ export default function OutletAnalysisPanel({
           </div>
 
           <div style={{ marginTop: 16 }}>
-            <div className="metric-summary-grid" style={{ gridTemplateColumns: "repeat(7, minmax(0, 1fr))" }}>
-              <div className="metric-summary-label">Month</div>
-              <div className="metric-summary-label">MS</div>
-              <div className="metric-summary-label">MS LY</div>
-              <div className="metric-summary-label">MS Change</div>
-              <div className="metric-summary-label">HSD</div>
-              <div className="metric-summary-label">HSD LY</div>
-              <div className="metric-summary-label">HSD Change</div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 12, alignItems: "center" }}>
+              <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>Month</div>
+              <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>MS</div>
+              <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>MS LY</div>
+              <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>MS Change</div>
+              <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>HSD</div>
+              <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>HSD LY</div>
+              <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>HSD Change</div>
             </div>
 
             <AnimatePresence mode="wait">
@@ -142,17 +142,16 @@ export default function OutletAnalysisPanel({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.3 }}
-                  className="metric-summary-grid"
-                  style={{ gridTemplateColumns: "repeat(7, minmax(0, 1fr))" }}
+                  style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 12, alignItems: "center" }}
                 >
-                  <div className="metric-summary-value" style={{ fontWeight: 600 }}>Cumulative</div>
-                  <div className="metric-summary-value-strong">{formatRoundedNumber(cumulativeSums?.ms)}</div>
-                  <div className="metric-summary-value">{formatRoundedNumber(cumulativeSums?.ms_ly)}</div>
+                  <div style={{ fontWeight: 600 }}>Cumulative</div>
+                  <div style={{ fontWeight: 700 }}>{formatRoundedNumber(cumulativeSums?.ms)}</div>
+                  <div>{formatRoundedNumber(cumulativeSums?.ms_ly)}</div>
                   <div>
                     <VolumeChange curr={cumulativeSums?.ms ?? 0} prev={cumulativeSums?.ms_ly ?? 0} />
                   </div>
-                  <div className="metric-summary-value-strong">{formatRoundedNumber(cumulativeSums?.hsd)}</div>
-                  <div className="metric-summary-value">{formatRoundedNumber(cumulativeSums?.hsd_ly)}</div>
+                  <div style={{ fontWeight: 700 }}>{formatRoundedNumber(cumulativeSums?.hsd)}</div>
+                  <div>{formatRoundedNumber(cumulativeSums?.hsd_ly)}</div>
                   <div>
                     <VolumeChange curr={cumulativeSums?.hsd ?? 0} prev={cumulativeSums?.hsd_ly ?? 0} />
                   </div>
@@ -164,17 +163,16 @@ export default function OutletAnalysisPanel({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.3 }}
-                  className="metric-summary-grid"
-                  style={{ gridTemplateColumns: "repeat(7, minmax(0, 1fr))" }}
+                  style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 12, alignItems: "center" }}
                 >
-                  <div className="metric-summary-value">{formatMonth(selected?.month)}</div>
-                  <div className="metric-summary-value-strong">{formatRoundedNumber(selected?.ms)}</div>
-                  <div className="metric-summary-value">{formatRoundedNumber(selected?.ms_ly)}</div>
+                  <div>{formatMonth(selected?.month)}</div>
+                  <div style={{ fontWeight: 700 }}>{formatRoundedNumber(selected?.ms)}</div>
+                  <div>{formatRoundedNumber(selected?.ms_ly)}</div>
                   <div>
                     <VolumeChange curr={selected?.ms} prev={selected?.ms_ly} />
                   </div>
-                  <div className="metric-summary-value-strong">{formatRoundedNumber(selected?.hsd)}</div>
-                  <div className="metric-summary-value">{formatRoundedNumber(selected?.hsd_ly)}</div>
+                  <div style={{ fontWeight: 700 }}>{formatRoundedNumber(selected?.hsd)}</div>
+                  <div>{formatRoundedNumber(selected?.hsd_ly)}</div>
                   <div>
                     <VolumeChange curr={selected?.hsd} prev={selected?.hsd_ly} />
                   </div>
@@ -187,31 +185,31 @@ export default function OutletAnalysisPanel({
             <h3 style={{ margin: "0 0 8px 0", display: "flex", alignItems: "center", gap: 6 }}>
               Trading Area Outlets
               <AnimatePresence mode="wait">
-              <motion.span
+                <motion.span
                   key={pageIndex === 1 ? "outlets-cumulative-title" : "outlets-monthly-title"}
                   initial={{ opacity: 0, y: -6 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 6 }}
                   transition={{ duration: 0.3 }}
-                  style={{ fontWeight: 400, fontSize: "var(--font-sm)", color: "#64748B" }}
+                  style={{ fontWeight: 400, fontSize: "0.9em", color: "#64748B" }}
                 >
                   ({periodTitle})
                 </motion.span>
               </AnimatePresence>
             </h3>
 
-            <div className="data-card">
-              <table className="data-table">
-                <thead>
+            <div style={{ background: "#fff", borderRadius: 8, padding: 8, boxShadow: "0 1px 2px rgba(2,6,23,0.04)" }}>
+              <table style={{ width: "100%", fontSize: 13, borderCollapse: "collapse" }}>
+                <thead style={{ color: "#94A3B8", textAlign: "left" }}>
                   <tr>
-                    <th>Outlet</th>
-                    <th>Company</th>
-                    <th>MS</th>
-                    <th>MS LY</th>
-                    <th>Volume Change</th>
-                    <th>HSD</th>
-                    <th>HSD LY</th>
-                    <th>Volume Change</th>
+                    <th style={{ padding: "8px 6px" }}>Outlet</th>
+                    <th style={{ padding: "8px 6px" }}>Company</th>
+                    <th style={{ padding: "8px 6px" }}>MS</th>
+                    <th style={{ padding: "8px 6px" }}>MS LY</th>
+                    <th style={{ padding: "8px 6px" }}>Volume Change</th>
+                    <th style={{ padding: "8px 6px" }}>HSD</th>
+                    <th style={{ padding: "8px 6px" }}>HSD LY</th>
+                    <th style={{ padding: "8px 6px" }}>Volume Change</th>
                   </tr>
                 </thead>
                 <AnimatePresence mode="wait">
@@ -231,16 +229,16 @@ export default function OutletAnalysisPanel({
                     ) : (
                       data.outlets.map((o, i) => (
                         <tr key={i} style={{ borderTop: "1px solid #F1F5F9" }}>
-                          <td>{o.name}</td>
-                          <td>{o.company}</td>
-                          <td>{formatRoundedNumber(o.ms)}</td>
-                          <td>{formatRoundedNumber(o.ms_ly)}</td>
-                          <td>
+                          <td style={{ padding: "8px 6px" }}>{o.name}</td>
+                          <td style={{ padding: "8px 6px" }}>{o.company}</td>
+                          <td style={{ padding: "8px 6px" }}>{formatRoundedNumber(o.ms)}</td>
+                          <td style={{ padding: "8px 6px" }}>{formatRoundedNumber(o.ms_ly)}</td>
+                          <td style={{ padding: "8px 6px" }}>
                             <VolumeChange curr={o.ms} prev={o.ms_ly} />
                           </td>
-                          <td>{formatRoundedNumber(o.hsd)}</td>
-                          <td>{formatRoundedNumber(o.hsd_ly)}</td>
-                          <td>
+                          <td style={{ padding: "8px 6px" }}>{formatRoundedNumber(o.hsd)}</td>
+                          <td style={{ padding: "8px 6px" }}>{formatRoundedNumber(o.hsd_ly)}</td>
+                          <td style={{ padding: "8px 6px" }}>
                             <VolumeChange curr={o.hsd} prev={o.hsd_ly} />
                           </td>
                         </tr>
@@ -254,14 +252,14 @@ export default function OutletAnalysisPanel({
 
           <div style={{ marginTop: 20 }}>
             <h3 style={{ margin: "0 0 8px 0" }}>Trading Area Market Share</h3>
-            <div className="data-card">
-              <table className="data-table">
-                <thead>
+            <div style={{ background: "#fff", borderRadius: 8, padding: 12, boxShadow: "0 1px 2px rgba(2,6,23,0.04)" }}>
+              <table style={{ width: "100%", fontSize: 13, borderCollapse: "collapse" }}>
+                <thead style={{ color: "#94A3B8", textAlign: "left" }}>
                   <tr>
-                    <th>Company</th>
-                    <th>Market Share</th>
-                    <th>Market Share (LY)</th>
-                    <th>Change</th>
+                    <th style={{ padding: "8px 6px" }}>Company</th>
+                    <th style={{ padding: "8px 6px" }}>Market Share</th>
+                    <th style={{ padding: "8px 6px" }}>Market Share (LY)</th>
+                    <th style={{ padding: "8px 6px" }}>Change</th>
                   </tr>
                 </thead>
                 <AnimatePresence mode="wait">
@@ -281,10 +279,10 @@ export default function OutletAnalysisPanel({
                     ) : (
                       data.shareRows.map((m, i) => (
                         <tr key={i} style={{ borderTop: "1px solid #F1F5F9" }}>
-                          <td>{m.company}</td>
-                          <td>{(m.share || 0).toFixed(2)}%</td>
-                          <td>{(m.share_ly || 0).toFixed(2)}%</td>
-                          <td>
+                          <td style={{ padding: "8px 6px" }}>{m.company}</td>
+                          <td style={{ padding: "8px 6px" }}>{(m.share || 0).toFixed(2)}%</td>
+                          <td style={{ padding: "8px 6px" }}>{(m.share_ly || 0).toFixed(2)}%</td>
+                          <td style={{ padding: "8px 6px" }}>
                             <ShareChange value={m.share_change || 0} />
                           </td>
                         </tr>

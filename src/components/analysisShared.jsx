@@ -49,8 +49,8 @@ export function TradingAreaPerformanceTable({
   includeCompany = false,
   metric = "combined",
 }) {
-  const cellStyle = { padding: "8px 8px", whiteSpace: "nowrap", verticalAlign: "middle" };
-  const nameCellStyle = { ...cellStyle, whiteSpace: "normal" };
+  const textCellStyle = { padding: "8px 8px", whiteSpace: "normal", verticalAlign: "middle", textAlign: "left" };
+  const numberCellStyle = { padding: "8px 8px", whiteSpace: "nowrap", verticalAlign: "middle", textAlign: "right" };
   const isCombined = metric === "combined";
   const isMS = metric === "ms";
   const metricLabel = isMS ? "MS" : "HSD";
@@ -69,31 +69,31 @@ export function TradingAreaPerformanceTable({
         <table style={{ width: "100%", fontSize: 13, borderCollapse: "collapse", tableLayout: "auto" }}>
           <thead style={{ color: "#94A3B8", textAlign: "left" }}>
             <tr>
-              <th style={nameCellStyle}>{firstColumnLabel}</th>
-              {includeCompany ? <th style={cellStyle}>Company</th> : null}
+              <th style={textCellStyle}>{firstColumnLabel}</th>
+              {includeCompany ? <th style={textCellStyle}>Company</th> : null}
               {isCombined ? (
                 <>
-                  <th style={cellStyle}>MS</th>
-                  <th style={cellStyle}>MS LY</th>
-                  <th style={cellStyle}>MS Change</th>
-                  <th style={cellStyle}>MS Share</th>
-                  <th style={cellStyle}>MS Share (LY)</th>
-                  <th style={cellStyle}>MS pp change</th>
-                  <th style={cellStyle}>HSD</th>
-                  <th style={cellStyle}>HSD LY</th>
-                  <th style={cellStyle}>HSD Change</th>
-                  <th style={cellStyle}>HSD Share</th>
-                  <th style={cellStyle}>HSD Share (LY)</th>
-                  <th style={cellStyle}>HSD pp change</th>
+                  <th style={numberCellStyle}>MS</th>
+                  <th style={numberCellStyle}>MS LY</th>
+                  <th style={numberCellStyle}>MS Change</th>
+                  <th style={numberCellStyle}>MS Share</th>
+                  <th style={numberCellStyle}>MS Share (LY)</th>
+                  <th style={numberCellStyle}>MS pp change</th>
+                  <th style={numberCellStyle}>HSD</th>
+                  <th style={numberCellStyle}>HSD LY</th>
+                  <th style={numberCellStyle}>HSD Change</th>
+                  <th style={numberCellStyle}>HSD Share</th>
+                  <th style={numberCellStyle}>HSD Share (LY)</th>
+                  <th style={numberCellStyle}>HSD pp change</th>
                 </>
               ) : (
                 <>
-                  <th style={cellStyle}>{metricLabel}</th>
-                  <th style={cellStyle}>{metricLabel} LY</th>
-                  <th style={cellStyle}>{metricLabel} Change</th>
-                  <th style={cellStyle}>{metricLabel} Share</th>
-                  <th style={cellStyle}>{metricLabel} Share (LY)</th>
-                  <th style={cellStyle}>{metricLabel} pp change</th>
+                  <th style={numberCellStyle}>{metricLabel}</th>
+                  <th style={numberCellStyle}>{metricLabel} LY</th>
+                  <th style={numberCellStyle}>{metricLabel} Change</th>
+                  <th style={numberCellStyle}>{metricLabel} Share</th>
+                  <th style={numberCellStyle}>{metricLabel} Share (LY)</th>
+                  <th style={numberCellStyle}>{metricLabel} pp change</th>
                 </>
               )}
             </tr>
@@ -118,41 +118,41 @@ export function TradingAreaPerformanceTable({
                     background: r.isTotal ? "rgba(248,250,252,0.8)" : "transparent",
                   }}
                 >
-                  <td style={nameCellStyle}>{r.name}</td>
-                  {includeCompany ? <td style={cellStyle}>{r.company}</td> : null}
+                  <td style={textCellStyle}>{r.name}</td>
+                  {includeCompany ? <td style={textCellStyle}>{r.company}</td> : null}
                   {isCombined ? (
                     <>
-                      <td style={cellStyle}>{formatRoundedNumber(r.ms)}</td>
-                      <td style={cellStyle}>{formatRoundedNumber(r.ms_ly)}</td>
-                      <td style={cellStyle}>
+                      <td style={numberCellStyle}>{formatRoundedNumber(r.ms)}</td>
+                      <td style={numberCellStyle}>{formatRoundedNumber(r.ms_ly)}</td>
+                      <td style={numberCellStyle}>
                         <VolumeChange curr={r.ms} prev={r.ms_ly} />
                       </td>
-                      <td style={cellStyle}>{Number(r.share || 0).toFixed(2)}%</td>
-                      <td style={cellStyle}>{Number(r.share_ly || 0).toFixed(2)}%</td>
-                      <td style={cellStyle}>
+                      <td style={numberCellStyle}>{Number(r.share || 0).toFixed(2)}%</td>
+                      <td style={numberCellStyle}>{Number(r.share_ly || 0).toFixed(2)}%</td>
+                      <td style={numberCellStyle}>
                         <ShareChange value={r.share_change || 0} />
                       </td>
-                      <td style={cellStyle}>{formatRoundedNumber(r.hsd)}</td>
-                      <td style={cellStyle}>{formatRoundedNumber(r.hsd_ly)}</td>
-                      <td style={cellStyle}>
+                      <td style={numberCellStyle}>{formatRoundedNumber(r.hsd)}</td>
+                      <td style={numberCellStyle}>{formatRoundedNumber(r.hsd_ly)}</td>
+                      <td style={numberCellStyle}>
                         <VolumeChange curr={r.hsd} prev={r.hsd_ly} />
                       </td>
-                      <td style={cellStyle}>{Number(r.hsd_share || 0).toFixed(2)}%</td>
-                      <td style={cellStyle}>{Number(r.hsd_share_ly || 0).toFixed(2)}%</td>
-                      <td style={cellStyle}>
+                      <td style={numberCellStyle}>{Number(r.hsd_share || 0).toFixed(2)}%</td>
+                      <td style={numberCellStyle}>{Number(r.hsd_share_ly || 0).toFixed(2)}%</td>
+                      <td style={numberCellStyle}>
                         <ShareChange value={r.hsd_share_change || 0} />
                       </td>
                     </>
                   ) : (
                     <>
-                      <td style={cellStyle}>{formatRoundedNumber(isMS ? r.ms : r.hsd)}</td>
-                      <td style={cellStyle}>{formatRoundedNumber(isMS ? r.ms_ly : r.hsd_ly)}</td>
-                      <td style={cellStyle}>
+                      <td style={numberCellStyle}>{formatRoundedNumber(isMS ? r.ms : r.hsd)}</td>
+                      <td style={numberCellStyle}>{formatRoundedNumber(isMS ? r.ms_ly : r.hsd_ly)}</td>
+                      <td style={numberCellStyle}>
                         <VolumeChange curr={isMS ? r.ms : r.hsd} prev={isMS ? r.ms_ly : r.hsd_ly} />
                       </td>
-                      <td style={cellStyle}>{Number((isMS ? r.share : r.hsd_share) || 0).toFixed(2)}%</td>
-                      <td style={cellStyle}>{Number((isMS ? r.share_ly : r.hsd_share_ly) || 0).toFixed(2)}%</td>
-                      <td style={cellStyle}>
+                      <td style={numberCellStyle}>{Number((isMS ? r.share : r.hsd_share) || 0).toFixed(2)}%</td>
+                      <td style={numberCellStyle}>{Number((isMS ? r.share_ly : r.hsd_share_ly) || 0).toFixed(2)}%</td>
+                      <td style={numberCellStyle}>
                         <ShareChange value={(isMS ? r.share_change : r.hsd_share_change) || 0} />
                       </td>
                     </>

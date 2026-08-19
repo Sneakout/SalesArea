@@ -202,14 +202,14 @@ export default function OutletAnalysisPanel({
               <table style={{ width: "100%", fontSize: 13, borderCollapse: "collapse" }}>
                 <thead style={{ color: "#94A3B8", textAlign: "left" }}>
                   <tr>
-                    <th style={{ padding: "8px 6px" }}>Outlet</th>
-                    <th style={{ padding: "8px 6px" }}>Company</th>
-                    <th style={{ padding: "8px 6px" }}>MS</th>
-                    <th style={{ padding: "8px 6px" }}>MS LY</th>
-                    <th style={{ padding: "8px 6px" }}>Volume Change</th>
-                    <th style={{ padding: "8px 6px" }}>HSD</th>
-                    <th style={{ padding: "8px 6px" }}>HSD LY</th>
-                    <th style={{ padding: "8px 6px" }}>Volume Change</th>
+                    <th style={{ padding: "8px 6px", textAlign: "left" }}>Outlet</th>
+                    <th style={{ padding: "8px 6px", textAlign: "left" }}>Company</th>
+                    <th style={{ padding: "8px 6px", textAlign: "right" }}>MS</th>
+                    <th style={{ padding: "8px 6px", textAlign: "right" }}>MS LY</th>
+                    <th style={{ padding: "8px 6px", textAlign: "right" }}>Volume Change</th>
+                    <th style={{ padding: "8px 6px", textAlign: "right" }}>HSD</th>
+                    <th style={{ padding: "8px 6px", textAlign: "right" }}>HSD LY</th>
+                    <th style={{ padding: "8px 6px", textAlign: "right" }}>Volume Change</th>
                   </tr>
                 </thead>
                 <AnimatePresence mode="wait">
@@ -229,16 +229,16 @@ export default function OutletAnalysisPanel({
                     ) : (
                       data.outlets.map((o, i) => (
                         <tr key={i} style={{ borderTop: "1px solid #F1F5F9" }}>
-                          <td style={{ padding: "8px 6px" }}>{o.name}</td>
-                          <td style={{ padding: "8px 6px" }}>{o.company}</td>
-                          <td style={{ padding: "8px 6px" }}>{formatRoundedNumber(o.ms)}</td>
-                          <td style={{ padding: "8px 6px" }}>{formatRoundedNumber(o.ms_ly)}</td>
-                          <td style={{ padding: "8px 6px" }}>
+                          <td style={{ padding: "8px 6px", textAlign: "left" }}>{o.name}</td>
+                          <td style={{ padding: "8px 6px", textAlign: "left" }}>{o.company}</td>
+                          <td style={{ padding: "8px 6px", textAlign: "right" }}>{formatRoundedNumber(o.ms)}</td>
+                          <td style={{ padding: "8px 6px", textAlign: "right" }}>{formatRoundedNumber(o.ms_ly)}</td>
+                          <td style={{ padding: "8px 6px", textAlign: "right" }}>
                             <VolumeChange curr={o.ms} prev={o.ms_ly} />
                           </td>
-                          <td style={{ padding: "8px 6px" }}>{formatRoundedNumber(o.hsd)}</td>
-                          <td style={{ padding: "8px 6px" }}>{formatRoundedNumber(o.hsd_ly)}</td>
-                          <td style={{ padding: "8px 6px" }}>
+                          <td style={{ padding: "8px 6px", textAlign: "right" }}>{formatRoundedNumber(o.hsd)}</td>
+                          <td style={{ padding: "8px 6px", textAlign: "right" }}>{formatRoundedNumber(o.hsd_ly)}</td>
+                          <td style={{ padding: "8px 6px", textAlign: "right" }}>
                             <VolumeChange curr={o.hsd} prev={o.hsd_ly} />
                           </td>
                         </tr>
@@ -256,10 +256,10 @@ export default function OutletAnalysisPanel({
               <table style={{ width: "100%", fontSize: 13, borderCollapse: "collapse" }}>
                 <thead style={{ color: "#94A3B8", textAlign: "left" }}>
                   <tr>
-                    <th style={{ padding: "8px 6px" }}>Company</th>
-                    <th style={{ padding: "8px 6px" }}>Market Share</th>
-                    <th style={{ padding: "8px 6px" }}>Market Share (LY)</th>
-                    <th style={{ padding: "8px 6px" }}>Change</th>
+                    <th style={{ padding: "8px 6px", textAlign: "left" }}>Company</th>
+                    <th style={{ padding: "8px 6px", textAlign: "right" }}>Market Share</th>
+                    <th style={{ padding: "8px 6px", textAlign: "right" }}>Market Share (LY)</th>
+                    <th style={{ padding: "8px 6px", textAlign: "right" }}>Change</th>
                   </tr>
                 </thead>
                 <AnimatePresence mode="wait">
@@ -279,10 +279,10 @@ export default function OutletAnalysisPanel({
                     ) : (
                       data.shareRows.map((m, i) => (
                         <tr key={i} style={{ borderTop: "1px solid #F1F5F9" }}>
-                          <td style={{ padding: "8px 6px" }}>{m.company}</td>
-                          <td style={{ padding: "8px 6px" }}>{(m.share || 0).toFixed(2)}%</td>
-                          <td style={{ padding: "8px 6px" }}>{(m.share_ly || 0).toFixed(2)}%</td>
-                          <td style={{ padding: "8px 6px" }}>
+                          <td style={{ padding: "8px 6px", textAlign: "left" }}>{m.company}</td>
+                          <td style={{ padding: "8px 6px", textAlign: "right" }}>{(m.share || 0).toFixed(2)}%</td>
+                          <td style={{ padding: "8px 6px", textAlign: "right" }}>{(m.share_ly || 0).toFixed(2)}%</td>
+                          <td style={{ padding: "8px 6px", textAlign: "right" }}>
                             <ShareChange value={m.share_change || 0} />
                           </td>
                         </tr>

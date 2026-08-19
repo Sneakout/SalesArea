@@ -441,6 +441,8 @@ function MonthSelector({ records, value, onChange }) {
 
 // Simple reusable table (columns fixed per your spec)
 function GrowthTable({ rows, label }) {
+  const textCell = { padding: '8px 6px', textAlign: 'left' };
+  const numberCell = { padding: '8px 6px', textAlign: 'right', whiteSpace: 'nowrap' };
   return (
     <div style={{ marginTop: 10 }}>
       <h4 style={{ margin: '0 0 6px 0' }}>{label}</h4>
@@ -448,13 +450,13 @@ function GrowthTable({ rows, label }) {
         <table style={{ width: '100%', fontSize: 13, borderCollapse: 'collapse' }}>
 <thead style={{ color: '#94A3B8', textAlign: 'left' }}>
   <tr>
-    <th style={{ padding: '8px 6px' }}>RO name</th>
-    <th style={{ padding: '8px 6px' }}>Company</th>
-    <th style={{ padding: '8px 6px' }}>Trading area</th>
-    <th style={{ padding: '8px 6px' }}>This year sales</th>
-    <th style={{ padding: '8px 6px' }}>Last year sales</th>
-    <th style={{ padding: '8px 6px' }}>Growth</th>
-    <th style={{ padding: '8px 6px' }}>Growth %</th>
+    <th style={textCell}>RO name</th>
+    <th style={textCell}>Company</th>
+    <th style={textCell}>Trading area</th>
+    <th style={numberCell}>This year sales</th>
+    <th style={numberCell}>Last year sales</th>
+    <th style={numberCell}>Growth</th>
+    <th style={numberCell}>Growth %</th>
   </tr>
 </thead>
 
@@ -463,13 +465,13 @@ function GrowthTable({ rows, label }) {
               <tr><td colSpan={6} style={{ padding: 16, color: '#64748B' }}>No matching ROs.</td></tr>
             ) : rows.map((r, i) => (
               <tr key={i} style={{ borderTop: '1px solid #F1F5F9' }}>
-                <td style={{ padding: '8px 6px' }}>{r.name}</td>
-                <td style={{ padding: '8px 6px' }}>{r.company}</td> {/* NEW */}
-                <td style={{ padding: '8px 6px' }}>{r.area}</td>
-                <td style={{ padding: '8px 6px', fontWeight: 700 }}>{formatRoundedNumber(r.thisYear)}</td>
-                <td style={{ padding: '8px 6px' }}>{formatRoundedNumber(r.lastYear)}</td>
-                <td style={{ padding: '8px 6px' }}>{(Number(r.growth) >= 0 ? '+' : '-') + formatRoundedNumber(Math.abs(Number(r.growth || 0)))}</td>
-                <td style={{ padding: '8px 6px' }}>{Number(r.growthPct).toFixed(1)}%</td>
+                <td style={textCell}>{r.name}</td>
+                <td style={textCell}>{r.company}</td>
+                <td style={textCell}>{r.area}</td>
+                <td style={{ ...numberCell, fontWeight: 700 }}>{formatRoundedNumber(r.thisYear)}</td>
+                <td style={numberCell}>{formatRoundedNumber(r.lastYear)}</td>
+                <td style={numberCell}>{(Number(r.growth) >= 0 ? '+' : '-') + formatRoundedNumber(Math.abs(Number(r.growth || 0)))}</td>
+                <td style={numberCell}>{Number(r.growthPct).toFixed(1)}%</td>
               </tr>
             ))}
           </tbody>
@@ -479,6 +481,8 @@ function GrowthTable({ rows, label }) {
   );
 }
 function SummaryTable({ rows, label }) {
+  const textCell = { padding: '8px 6px', textAlign: 'left' };
+  const numberCell = { padding: '8px 6px', textAlign: 'right', whiteSpace: 'nowrap' };
   return (
     <div style={{ marginTop: 10 }}>
       <h4 style={{ margin: '0 0 6px 0' }}>{label}</h4>
@@ -486,10 +490,10 @@ function SummaryTable({ rows, label }) {
         <table style={{ width: '100%', fontSize: 13, borderCollapse: 'collapse' }}>
           <thead style={{ color: '#94A3B8', textAlign: 'left' }}>
             <tr>
-              <th style={{ padding: '8px 6px' }}>Company</th>
-              <th style={{ padding: '8px 6px' }}>Number of ROs</th>
-              <th style={{ padding: '8px 6px' }}>ROs without base</th>
-              <th style={{ padding: '8px 6px' }}>ROs with base</th>
+              <th style={textCell}>Company</th>
+              <th style={numberCell}>Number of ROs</th>
+              <th style={numberCell}>ROs without base</th>
+              <th style={numberCell}>ROs with base</th>
             </tr>
           </thead>
           <tbody>
@@ -497,10 +501,10 @@ function SummaryTable({ rows, label }) {
               <tr><td colSpan={4} style={{ padding: 16, color: '#64748B' }}>No data.</td></tr>
             ) : rows.map((r, i) => (
               <tr key={i} style={{ borderTop: '1px solid #F1F5F9' }}>
-                <td style={{ padding: '8px 6px' }}>{r.company}</td>
-                <td style={{ padding: '8px 6px' }}>{r.total}</td>
-                <td style={{ padding: '8px 6px' }}>{r.withoutBase}</td>
-                <td style={{ padding: '8px 6px' }}>{r.withBase}</td>
+                <td style={textCell}>{r.company}</td>
+                <td style={numberCell}>{r.total}</td>
+                <td style={numberCell}>{r.withoutBase}</td>
+                <td style={numberCell}>{r.withBase}</td>
               </tr>
             ))}
           </tbody>
@@ -512,6 +516,8 @@ function SummaryTable({ rows, label }) {
 
 // === NEW: Market share table ===
 function MarketShareTable({ rows, label }) {
+  const textCell = { padding: '8px 6px', textAlign: 'left' };
+  const numberCell = { padding: '8px 6px', textAlign: 'right', whiteSpace: 'nowrap' };
   return (
     <div style={{ marginTop: 10 }}>
       <h4 style={{ margin: '0 0 6px 0' }}>{label}</h4>
@@ -519,15 +525,15 @@ function MarketShareTable({ rows, label }) {
         <table style={{ width: '100%', fontSize: 13, borderCollapse: 'collapse' }}>
           <thead style={{ color: '#94A3B8', textAlign: 'left' }}>
             <tr>
-              <th style={{ padding: '8px 6px' }}>Company</th>
-              <th style={{ padding: '8px 6px' }}>Current year sales</th>
-              <th style={{ padding: '8px 6px' }}>Last year sales</th>
-              <th style={{ padding: '8px 6px' }}>Growth</th>
-              <th style={{ padding: '8px 6px' }}>Growth %</th>
-              <th style={{ padding: '8px 6px' }}>Current share</th>
-              <th style={{ padding: '8px 6px' }}>Last year share</th>
-              <th style={{ padding: '8px 6px' }}>Change</th>
-              <th style={{ padding: '8px 6px' }}>Mop up volume</th>
+              <th style={textCell}>Company</th>
+              <th style={numberCell}>Current year sales</th>
+              <th style={numberCell}>Last year sales</th>
+              <th style={numberCell}>Growth</th>
+              <th style={numberCell}>Growth %</th>
+              <th style={numberCell}>Current share</th>
+              <th style={numberCell}>Last year share</th>
+              <th style={numberCell}>Change</th>
+              <th style={numberCell}>Mop up volume</th>
             </tr>
           </thead>
           <tbody>
@@ -535,31 +541,31 @@ function MarketShareTable({ rows, label }) {
               <tr><td colSpan={9} style={{ padding: 16, color: '#64748B' }}>No data.</td></tr>
             ) : rows.map((r, i) => (
               <tr key={i} style={{ borderTop: '1px solid #F1F5F9', fontWeight: r.isTotal ? 700 : 400, background: r.isTotal ? 'rgba(248,250,252,0.8)' : 'transparent' }}>
-                <td style={{ padding: '8px 6px' }}>{r.company}</td>
-                <td style={{ padding: '8px 6px', fontWeight: 700 }}>{formatRoundedNumber(r.curr)}</td>
-                <td style={{ padding: '8px 6px' }}>{formatRoundedNumber(r.last)}</td>
+                <td style={textCell}>{r.company}</td>
+                <td style={{ ...numberCell, fontWeight: 700 }}>{formatRoundedNumber(r.curr)}</td>
+                <td style={numberCell}>{formatRoundedNumber(r.last)}</td>
                 <td style={{
-                  padding: '8px 6px',
+                  ...numberCell,
                   background: (r.growth || 0) >= 0 ? '#ECFDF5' : '#FEF2F2',
                   color: (r.growth || 0) >= 0 ? '#064E3B' : '#7F1D1D',
                   fontWeight: 700
                 }}>{(r.growth >= 0 ? '+' : '') + formatRoundedNumber(Math.abs(Number(r.growth || 0)))}</td>
                 <td style={{
-                  padding: '8px 6px',
+                  ...numberCell,
                   background: (r.growthPct || 0) >= 0 ? '#ECFDF5' : '#FEF2F2',
                   color: (r.growthPct || 0) >= 0 ? '#064E3B' : '#7F1D1D',
                   fontWeight: 700
                 }}>{Number(r.growthPct || 0).toFixed(1)}%</td>
-                <td style={{ padding: '8px 6px' }}>{Number(r.share || 0).toFixed(2)}%</td>
-                <td style={{ padding: '8px 6px' }}>{Number(r.share_ly || 0).toFixed(2)}%</td>
+                <td style={numberCell}>{Number(r.share || 0).toFixed(2)}%</td>
+                <td style={numberCell}>{Number(r.share_ly || 0).toFixed(2)}%</td>
                 <td style={{
-                  padding: '8px 6px',
+                  ...numberCell,
                   background: (r.share_change || 0) >= 0 ? '#ECFDF5' : '#FEE2E2',
                   color: (r.share_change || 0) >= 0 ? '#064E3B' : '#7F1D1D',
                   fontWeight: 700
                 }}>{(r.share_change >= 0 ? '+' : '') + Number(r.share_change || 0).toFixed(2)} pp</td>
                 <td style={{
-                  padding: '8px 6px',
+                  ...numberCell,
                   background: (r.mop_up || 0) <= 0 ? '#ECFDF5' : '#FEF2F2',
                   color: (r.mop_up || 0) <= 0 ? '#064E3B' : '#7F1D1D',
                   fontWeight: 700
@@ -574,6 +580,8 @@ function MarketShareTable({ rows, label }) {
 }
 
 function ProjectionTable({ rows, label, targetMonth }) {
+  const textCell = { padding: "8px 6px", textAlign: "left" };
+  const numberCell = { padding: "8px 6px", textAlign: "right", whiteSpace: "nowrap" };
   const [targetYearRaw] = (targetMonth || "").split("-");
   const targetYear = Number(targetYearRaw);
   const lastYearMonthLabel = targetYear
@@ -586,15 +594,15 @@ function ProjectionTable({ rows, label, targetMonth }) {
         <table style={{ width: "100%", fontSize: 13, borderCollapse: "collapse" }}>
           <thead style={{ color: "#94A3B8", textAlign: "left" }}>
             <tr>
-              <th style={{ padding: "8px 6px" }}>Company</th>
-              <th style={{ padding: "8px 6px" }}>{lastYearMonthLabel} sales</th>
-              <th style={{ padding: "8px 6px" }}>{formatMonth(targetMonth)} projected sales</th>
-              <th style={{ padding: "8px 6px" }}>Projected growth</th>
-              <th style={{ padding: "8px 6px" }}>Projected growth %</th>
-              <th style={{ padding: "8px 6px" }}>{lastYearMonthLabel} share</th>
-              <th style={{ padding: "8px 6px" }}>Projected share</th>
-              <th style={{ padding: "8px 6px" }}>Projected change</th>
-              <th style={{ padding: "8px 6px" }}>Confidence</th>
+              <th style={textCell}>Company</th>
+              <th style={numberCell}>{lastYearMonthLabel} sales</th>
+              <th style={numberCell}>{formatMonth(targetMonth)} projected sales</th>
+              <th style={numberCell}>Projected growth</th>
+              <th style={numberCell}>Projected growth %</th>
+              <th style={numberCell}>{lastYearMonthLabel} share</th>
+              <th style={numberCell}>Projected share</th>
+              <th style={numberCell}>Projected change</th>
+              <th style={textCell}>Confidence</th>
             </tr>
           </thead>
           <tbody>
@@ -602,30 +610,30 @@ function ProjectionTable({ rows, label, targetMonth }) {
               <tr><td colSpan={9} style={{ padding: 16, color: "#64748B" }}>No projection data.</td></tr>
             ) : rows.map((r, index) => (
               <tr key={index} style={{ borderTop: "1px solid #F1F5F9", fontWeight: r.isTotal ? 700 : 400, background: r.isTotal ? "rgba(248,250,252,0.8)" : "transparent" }}>
-                <td style={{ padding: "8px 6px" }}>{r.company}</td>
-                <td style={{ padding: "8px 6px", fontWeight: 700 }}>{formatRoundedNumber(r.last)}</td>
-                <td style={{ padding: "8px 6px", fontWeight: 700 }}>{formatRoundedNumber(r.projected)}</td>
+                <td style={textCell}>{r.company}</td>
+                <td style={{ ...numberCell, fontWeight: 700 }}>{formatRoundedNumber(r.last)}</td>
+                <td style={{ ...numberCell, fontWeight: 700 }}>{formatRoundedNumber(r.projected)}</td>
                 <td style={{
-                  padding: "8px 6px",
+                  ...numberCell,
                   background: (r.projectedGrowth || 0) >= 0 ? "#ECFDF5" : "#FEF2F2",
                   color: (r.projectedGrowth || 0) >= 0 ? "#064E3B" : "#7F1D1D",
                   fontWeight: 700
                 }}>{(r.projectedGrowth >= 0 ? "+" : "-") + formatRoundedNumber(Math.abs(Number(r.projectedGrowth || 0)))}</td>
                 <td style={{
-                  padding: "8px 6px",
+                  ...numberCell,
                   background: (r.projectedGrowthPct || 0) >= 0 ? "#ECFDF5" : "#FEF2F2",
                   color: (r.projectedGrowthPct || 0) >= 0 ? "#064E3B" : "#7F1D1D",
                   fontWeight: 700
                 }}>{Number(r.projectedGrowthPct || 0).toFixed(1)}%</td>
-                <td style={{ padding: "8px 6px" }}>{Number(r.lastYearShare || 0).toFixed(2)}%</td>
-                <td style={{ padding: "8px 6px" }}>{Number(r.projectedShare || 0).toFixed(2)}%</td>
+                <td style={numberCell}>{Number(r.lastYearShare || 0).toFixed(2)}%</td>
+                <td style={numberCell}>{Number(r.projectedShare || 0).toFixed(2)}%</td>
                 <td style={{
-                  padding: "8px 6px",
+                  ...numberCell,
                   background: (r.projectedShareChange || 0) >= 0 ? "#ECFDF5" : "#FEE2E2",
                   color: (r.projectedShareChange || 0) >= 0 ? "#064E3B" : "#7F1D1D",
                   fontWeight: 700
                 }}>{(r.projectedShareChange >= 0 ? "+" : "") + Number(r.projectedShareChange || 0).toFixed(2)} pp</td>
-                <td style={{ padding: "8px 6px", color: r.confidence === "High" ? "#166534" : r.confidence === "Medium" ? "#92400E" : "#64748B", fontWeight: 700 }}>
+                <td style={{ ...textCell, color: r.confidence === "High" ? "#166534" : r.confidence === "Medium" ? "#92400E" : "#64748B", fontWeight: 700 }}>
                   {r.confidence}
                 </td>
               </tr>
@@ -676,6 +684,8 @@ function PageContextLine({ children }) {
 }
 
 function TradingAreaLossTable({ rows, label, onAreaSelect }) {
+  const textCell = { padding: '8px 6px', textAlign: 'left' };
+  const numberCell = { padding: '8px 6px', textAlign: 'right', whiteSpace: 'nowrap' };
   return (
     <div style={{ marginTop: 10 }}>
       <h4 style={{ margin: '0 0 6px 0' }}>{label}</h4>
@@ -683,14 +693,14 @@ function TradingAreaLossTable({ rows, label, onAreaSelect }) {
         <table style={{ width: '100%', fontSize: 13, borderCollapse: 'collapse' }}>
           <thead style={{ color: '#94A3B8', textAlign: 'left' }}>
             <tr>
-              <th style={{ padding: '8px 6px' }}>Trading area</th>
-              <th style={{ padding: '8px 6px' }}>IOC current sales</th>
-              <th style={{ padding: '8px 6px' }}>IOC last year sales</th>
-              <th style={{ padding: '8px 6px' }}>Growth</th>
-              <th style={{ padding: '8px 6px' }}>Growth %</th>
-              <th style={{ padding: '8px 6px' }}>IOC current share</th>
-              <th style={{ padding: '8px 6px' }}>IOC last year share</th>
-              <th style={{ padding: '8px 6px' }}>Share loss</th>
+              <th style={textCell}>Trading area</th>
+              <th style={numberCell}>IOC current sales</th>
+              <th style={numberCell}>IOC last year sales</th>
+              <th style={numberCell}>Growth</th>
+              <th style={numberCell}>Growth %</th>
+              <th style={numberCell}>IOC current share</th>
+              <th style={numberCell}>IOC last year share</th>
+              <th style={numberCell}>Share loss</th>
             </tr>
           </thead>
           <tbody>
@@ -698,7 +708,7 @@ function TradingAreaLossTable({ rows, label, onAreaSelect }) {
               <tr><td colSpan={8} style={{ padding: 16, color: '#64748B' }}>No IOC losing trading areas found.</td></tr>
             ) : rows.map((r, i) => (
               <tr key={i} style={{ borderTop: '1px solid #F1F5F9' }}>
-                <td style={{ padding: '8px 6px', fontWeight: 700 }}>
+                <td style={{ ...textCell, fontWeight: 700 }}>
                   <button
                     type="button"
                     onClick={() => onAreaSelect && onAreaSelect(r)}
@@ -717,23 +727,23 @@ function TradingAreaLossTable({ rows, label, onAreaSelect }) {
                     {r.area}
                   </button>
                 </td>
-                <td style={{ padding: '8px 6px' }}>{formatRoundedNumber(r.curr)}</td>
-                <td style={{ padding: '8px 6px' }}>{formatRoundedNumber(r.last)}</td>
+                <td style={numberCell}>{formatRoundedNumber(r.curr)}</td>
+                <td style={numberCell}>{formatRoundedNumber(r.last)}</td>
                 <td style={{
-                  padding: '8px 6px',
+                  ...numberCell,
                   background: (r.growth || 0) >= 0 ? '#ECFDF5' : '#FEF2F2',
                   color: (r.growth || 0) >= 0 ? '#064E3B' : '#7F1D1D',
                   fontWeight: 700
                 }}>{(r.growth >= 0 ? '+' : '') + formatRoundedNumber(Math.abs(Number(r.growth || 0)))}</td>
                 <td style={{
-                  padding: '8px 6px',
+                  ...numberCell,
                   background: (r.growthPct || 0) >= 0 ? '#ECFDF5' : '#FEF2F2',
                   color: (r.growthPct || 0) >= 0 ? '#064E3B' : '#7F1D1D',
                   fontWeight: 700
                 }}>{Number(r.growthPct || 0).toFixed(1)}%</td>
-                <td style={{ padding: '8px 6px' }}>{Number(r.share || 0).toFixed(2)}%</td>
-                <td style={{ padding: '8px 6px' }}>{Number(r.share_ly || 0).toFixed(2)}%</td>
-                <td style={{ padding: '8px 6px' }}><ShareChange value={r.share_change || 0} /></td>
+                <td style={numberCell}>{Number(r.share || 0).toFixed(2)}%</td>
+                <td style={numberCell}>{Number(r.share_ly || 0).toFixed(2)}%</td>
+                <td style={numberCell}><ShareChange value={r.share_change || 0} /></td>
               </tr>
             ))}
           </tbody>
@@ -862,6 +872,8 @@ function ClassOfMarketSelector({ value, onChange, classes }) {
 }
 
 function CountSummaryTable({ rows, label }) {
+  const textCell = { padding: "8px 6px", textAlign: "left" };
+  const numberCell = { padding: "8px 6px", textAlign: "right", whiteSpace: "nowrap" };
   return (
     <div style={{ marginTop: 10 }}>
       <h4 style={{ margin: "0 0 6px 0" }}>{label}</h4>
@@ -869,8 +881,8 @@ function CountSummaryTable({ rows, label }) {
         <table style={{ width: "100%", fontSize: 13, borderCollapse: "collapse" }}>
           <thead style={{ color: "#94A3B8", textAlign: "left" }}>
             <tr>
-              <th style={{ padding: "8px 6px" }}>Company</th>
-              <th style={{ padding: "8px 6px" }}>Count</th>
+              <th style={textCell}>Company</th>
+              <th style={numberCell}>Count</th>
             </tr>
           </thead>
           <tbody>
@@ -878,8 +890,8 @@ function CountSummaryTable({ rows, label }) {
               <tr><td colSpan={2} style={{ padding: 16, color: "#64748B" }}>No data.</td></tr>
             ) : rows.map((row, index) => (
               <tr key={index} style={{ borderTop: "1px solid #F1F5F9" }}>
-                <td style={{ padding: "8px 6px" }}>{row.company}</td>
-                <td style={{ padding: "8px 6px", fontWeight: 700 }}>{row.count}</td>
+                <td style={textCell}>{row.company}</td>
+                <td style={{ ...numberCell, fontWeight: 700 }}>{row.count}</td>
               </tr>
             ))}
           </tbody>
@@ -978,6 +990,7 @@ function ClassOfMarketCompanyTotalsTable({ rows, label }) {
 }
 
 function CommissioningTable({ rows, label, monthLabel, trailingLabel }) {
+  const textCell = { padding: "8px 6px", textAlign: "left" };
   return (
     <div style={{ marginTop: 10 }}>
       <h4 style={{ margin: "0 0 6px 0" }}>{label}</h4>
@@ -985,11 +998,11 @@ function CommissioningTable({ rows, label, monthLabel, trailingLabel }) {
         <table style={{ width: "100%", fontSize: 13, borderCollapse: "collapse" }}>
           <thead style={{ color: "#94A3B8", textAlign: "left" }}>
             <tr>
-              <th style={{ padding: "8px 6px" }}>Month</th>
-              <th style={{ padding: "8px 6px" }}>Company</th>
-              <th style={{ padding: "8px 6px" }}>Outlet</th>
-              <th style={{ padding: "8px 6px" }}>Trading area</th>
-              <th style={{ padding: "8px 6px" }}>{trailingLabel}</th>
+              <th style={textCell}>Month</th>
+              <th style={textCell}>Company</th>
+              <th style={textCell}>Outlet</th>
+              <th style={textCell}>Trading area</th>
+              <th style={textCell}>{trailingLabel}</th>
             </tr>
           </thead>
           <tbody>
@@ -997,11 +1010,11 @@ function CommissioningTable({ rows, label, monthLabel, trailingLabel }) {
               <tr><td colSpan={5} style={{ padding: 16, color: "#64748B" }}>No outlets in this financial year.</td></tr>
             ) : rows.map((row, index) => (
               <tr key={index} style={{ borderTop: "1px solid #F1F5F9" }}>
-                <td style={{ padding: "8px 6px", fontWeight: 700 }}>{row.monthDisplay || formatMonth(row.month)}</td>
-                <td style={{ padding: "8px 6px" }}>{row.company}</td>
-                <td style={{ padding: "8px 6px" }}>{row.outlet}</td>
-                <td style={{ padding: "8px 6px" }}>{row.trading_area}</td>
-                <td style={{ padding: "8px 6px" }}>{row[`${monthLabel}Display`] || (row[monthLabel] ? formatMonth(row[monthLabel]) : "—")}</td>
+                <td style={{ ...textCell, fontWeight: 700 }}>{row.monthDisplay || formatMonth(row.month)}</td>
+                <td style={textCell}>{row.company}</td>
+                <td style={textCell}>{row.outlet}</td>
+                <td style={textCell}>{row.trading_area}</td>
+                <td style={textCell}>{row[`${monthLabel}Display`] || (row[monthLabel] ? formatMonth(row[monthLabel]) : "—")}</td>
               </tr>
             ))}
           </tbody>

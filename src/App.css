@@ -114,6 +114,45 @@
   color: #7f1d1d;
 }
 
+.analysis-table-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 6px;
+  transition: color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+.analysis-table-link-arrow {
+  color: #94a3b8;
+  font-size: 1.15em;
+  font-weight: 700;
+  line-height: 1;
+  opacity: 0.75;
+  transition: color 160ms ease, transform 160ms ease, opacity 160ms ease;
+}
+
+.analysis-table-link:hover {
+  color: #0f172a;
+  background: #f1f5f9;
+}
+
+.analysis-table-link:hover .analysis-table-link-arrow {
+  color: #475569;
+  opacity: 1;
+  transform: translateX(2px);
+}
+
+.analysis-table-link:focus,
+.analysis-table-link:focus-visible {
+  outline: none;
+}
+
+.analysis-table-link:focus-visible {
+  color: #0f172a;
+  background: #f8fafc;
+  box-shadow: 0 0 0 2px rgba(100, 116, 139, 0.22);
+}
+
 /* ===== transition for details panel & tables ===== */
 .selected-panel {
   position: relative;

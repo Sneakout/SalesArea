@@ -19,6 +19,8 @@ export default function TradingAreaAnalysisPanel({
   latestMonth,
   outletsInAreaNorm,
   onBack,
+  onPeriodChange,
+  onCycleMetric,
 }) {
   const data = useMemo(() => {
     const areaNorm = taSelected?.trading_area_norm || "";
@@ -91,36 +93,90 @@ export default function TradingAreaAnalysisPanel({
         transition={{ duration: 0.3 }}
       >
         <div>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
-            <div>
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            gap: 20,
+            flexWrap: "wrap",
+            padding: "4px 0 14px",
+            borderBottom: "1px solid #E2E8F0",
+          }}>
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
                 <button
                   type="button"
                   onClick={onBack}
-                  aria-label="Back to trading area rankings"
-                  title="IOC"
+                  aria-label="Back to previous analysis screen"
+                  title="Back"
                   style={{
                     width: 36,
                     height: 36,
                     borderRadius: 8,
-                    border: "none",
-                    background: "#F8FAFC",
+                    border: "1px solid #CBD5E1",
+                    background: "#FFFFFF",
+                    color: "#334155",
                     cursor: "pointer",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     padding: 4,
+                    flex: "0 0 auto",
                   }}
                 >
-                  <img
-                    src="/logos/IOC.svg"
-                    alt="IOC"
-                    style={{ width: 24, height: 24, objectFit: "contain" }}
-                  />
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path
+                      d="M15 18l-6-6 6-6"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
                 </button>
-                <h2 style={{ margin: 0 }}>{taSelected?.trading_area}</h2>
+                <div>
+                  <div style={{ color: "#64748B", fontSize: 11, fontWeight: 800, letterSpacing: ".07em", textTransform: "uppercase" }}>Trading area</div>
+                  <h2 style={{ margin: "2px 0 0" }}>{taSelected?.trading_area}</h2>
+                  <div style={{ color: "#64748B", marginTop: 3, fontSize: 13 }}>Performance and outlet analysis</div>
+                </div>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "flex-end", gap: 16, flexWrap: "wrap" }}>
+              <div>
+                <div style={{ color: "#64748B", fontSize: 11, fontWeight: 800, marginBottom: 5, textTransform: "uppercase", letterSpacing: ".05em" }}>Period</div>
+                <div style={{ display: "inline-flex", padding: 3, borderRadius: 9, background: "#F1F5F9" }}>
+                  {[{ value: "month", label: "Month" }, { value: "cumulative", label: "Cumulative" }].map((option) => {
+                    const active = taView.period === option.value;
+                    return (
+                      <button
+                        key={option.value}
+                        type="button"
+                        onClick={() => onPeriodChange(option.value)}
+                        aria-pressed={active}
+                        style={{
+                          border: "none",
+                          borderRadius: 7,
+                          padding: "6px 10px",
+                          background: active ? "#FFFFFF" : "transparent",
+                          color: active ? "#0F172A" : "#64748B",
+                          boxShadow: active ? "0 1px 3px rgba(15,23,42,.12)" : "none",
+                          cursor: "pointer",
+                          fontSize: 12,
+                          fontWeight: 700,
+                        }}
+                      >{option.label}</button>
+                    );
+                  })}
+                </div>
               </div>
-              <div style={{ color: "#64748B", marginTop: 6 }}>Trading area analysis</div>
+
+              <div>
+                <div style={{ color: "#64748B", fontSize: 11, fontWeight: 800, marginBottom: 5, textTransform: "uppercase", letterSpacing: ".05em" }}>View</div>
+                <div style={{ display: "flex", alignItems: "center", gap: 4, padding: 3, border: "1px solid #E2E8F0", borderRadius: 9, background: "#FFFFFF" }}>
+                  <button type="button" onClick={() => onCycleMetric(-1)} aria-label="Previous metric" className="nav-btn" style={{ width: 30, height: 30, border: "none", boxShadow: "none" }}>‹</button>
+                  <div style={{ minWidth: 72, textAlign: "center", color: "#0F172A", fontSize: 12, fontWeight: 800 }}>{metricLabel}</div>
+                  <button type="button" onClick={() => onCycleMetric(1)} aria-label="Next metric" className="nav-btn" style={{ width: 30, height: 30, border: "none", boxShadow: "none" }}>›</button>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -137,18 +193,18 @@ export default function TradingAreaAnalysisPanel({
               <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>Outlets</div>
               {activeMetric === "combined" ? (
                 <>
-                  <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>MS</div>
+                  <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>MS CY</div>
                   <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>MS LY</div>
                   <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>MS Change</div>
                   <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>Avg MS</div>
-                  <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>HSD</div>
+                  <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>HSD CY</div>
                   <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>HSD LY</div>
                   <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>HSD Change</div>
                   <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>Avg HSD</div>
                 </>
               ) : (
                 <>
-                  <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>{metricLabel}</div>
+                  <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>{metricLabel} CY</div>
                   <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>{metricLabel} LY</div>
                   <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>{metricLabel} Change</div>
                   <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>Avg {metricLabel}</div>

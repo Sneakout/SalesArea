@@ -73,25 +73,25 @@ export function TradingAreaPerformanceTable({
               {includeCompany ? <th style={textCellStyle}>Company</th> : null}
               {isCombined ? (
                 <>
-                  <th style={numberCellStyle}>MS</th>
+                  <th style={numberCellStyle}>MS CY</th>
                   <th style={numberCellStyle}>MS LY</th>
                   <th style={numberCellStyle}>MS Change</th>
-                  <th style={numberCellStyle}>MS Share</th>
+                  <th style={numberCellStyle}>MS Share (CY)</th>
                   <th style={numberCellStyle}>MS Share (LY)</th>
                   <th style={numberCellStyle}>MS pp change</th>
-                  <th style={numberCellStyle}>HSD</th>
+                  <th style={numberCellStyle}>HSD CY</th>
                   <th style={numberCellStyle}>HSD LY</th>
                   <th style={numberCellStyle}>HSD Change</th>
-                  <th style={numberCellStyle}>HSD Share</th>
+                  <th style={numberCellStyle}>HSD Share (CY)</th>
                   <th style={numberCellStyle}>HSD Share (LY)</th>
                   <th style={numberCellStyle}>HSD pp change</th>
                 </>
               ) : (
                 <>
-                  <th style={numberCellStyle}>{metricLabel}</th>
+                  <th style={numberCellStyle}>{metricLabel} CY</th>
                   <th style={numberCellStyle}>{metricLabel} LY</th>
                   <th style={numberCellStyle}>{metricLabel} Change</th>
-                  <th style={numberCellStyle}>{metricLabel} Share</th>
+                  <th style={numberCellStyle}>{metricLabel} Share (CY)</th>
                   <th style={numberCellStyle}>{metricLabel} Share (LY)</th>
                   <th style={numberCellStyle}>{metricLabel} pp change</th>
                 </>

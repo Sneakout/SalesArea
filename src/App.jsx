@@ -40,7 +40,7 @@ const STORAGE_KEY = "fuelmap_records_v5";
 const LEGACY_STORAGE_KEYS = ["fuelmap_records_v4"];
 const ANALYSIS_TABS = [
   { index: 12, label: "Top", title: "Highest selling outlets (selected month)", tone: "indigo" },
-  { index: 13, label: "Class mix", title: "RO count and company participation by class of market", tone: "cyan" },
+  { index: 13, label: "COM", title: "RO count and company participation by class of market", tone: "cyan" },
   { index: 2, label: "+M", title: "Positive growth (selected month)", tone: "sky" },
   { index: 3, label: "+C", title: "Positive growth (cumulative Apr → selected)", tone: "green" },
   { index: 4, label: "−M", title: "Negative growth (selected month)", tone: "red" },
@@ -439,22 +439,56 @@ function MonthSelector({ records, value, onChange }) {
   );
 }
 
+function AnalysisTableLink({ children, onClick }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="analysis-table-link"
+      style={{
+        border: 'none',
+        background: 'transparent',
+        padding: '3px 6px',
+        margin: '0 0 0 -6px',
+        color: 'inherit',
+        cursor: 'pointer',
+        fontWeight: 650,
+        textAlign: 'left',
+        textDecoration: 'none'
+      }}
+    >
+      <span>{children}</span>
+      <span className="analysis-table-link-arrow" aria-hidden="true">›</span>
+    </button>
+  );
+}
+
 // Simple reusable table (columns fixed per your spec)
-function GrowthTable({ rows, label }) {
+function GrowthTable({ rows, label, onOutletSelect, onAreaSelect }) {
   const textCell = { padding: '8px 6px', textAlign: 'left' };
+  const outletNameCell = { ...textCell, overflowWrap: 'anywhere', lineHeight: 1.35 };
   const numberCell = { padding: '8px 6px', textAlign: 'right', whiteSpace: 'nowrap' };
   return (
     <div style={{ marginTop: 10 }}>
       <h4 style={{ margin: '0 0 6px 0' }}>{label}</h4>
       <div style={{ background: '#fff', borderRadius: 8, padding: 12, boxShadow: '0 1px 2px rgba(2,6,23,0.04)' }}>
-        <table style={{ width: '100%', fontSize: 13, borderCollapse: 'collapse' }}>
+        <table style={{ width: '100%', fontSize: 13, borderCollapse: 'collapse', tableLayout: 'fixed' }}>
+          <colgroup>
+            <col style={{ width: '28%' }} />
+            <col style={{ width: '10%' }} />
+            <col style={{ width: '18%' }} />
+            <col style={{ width: '11%' }} />
+            <col style={{ width: '11%' }} />
+            <col style={{ width: '11%' }} />
+            <col style={{ width: '11%' }} />
+          </colgroup>
 <thead style={{ color: '#94A3B8', textAlign: 'left' }}>
   <tr>
-    <th style={textCell}>RO name</th>
+    <th style={outletNameCell}>RO name</th>
     <th style={textCell}>Company</th>
     <th style={textCell}>Trading area</th>
-    <th style={numberCell}>This year sales</th>
-    <th style={numberCell}>Last year sales</th>
+    <th style={numberCell}>CY sales</th>
+    <th style={numberCell}>LY sales</th>
     <th style={numberCell}>Growth</th>
     <th style={numberCell}>Growth %</th>
   </tr>
@@ -465,9 +499,17 @@ function GrowthTable({ rows, label }) {
               <tr><td colSpan={6} style={{ padding: 16, color: '#64748B' }}>No matching ROs.</td></tr>
             ) : rows.map((r, i) => (
               <tr key={i} style={{ borderTop: '1px solid #F1F5F9' }}>
-                <td style={textCell}>{r.name}</td>
+                <td style={outletNameCell}>
+                  {onOutletSelect ? (
+                    <AnalysisTableLink onClick={() => onOutletSelect(r)}>{r.name}</AnalysisTableLink>
+                  ) : r.name}
+                </td>
                 <td style={textCell}>{r.company}</td>
-                <td style={textCell}>{r.area}</td>
+                <td style={textCell}>
+                  {onAreaSelect ? (
+                    <AnalysisTableLink onClick={() => onAreaSelect(r)}>{r.area}</AnalysisTableLink>
+                  ) : r.area}
+                </td>
                 <td style={{ ...numberCell, fontWeight: 700 }}>{formatRoundedNumber(r.thisYear)}</td>
                 <td style={numberCell}>{formatRoundedNumber(r.lastYear)}</td>
                 <td style={numberCell}>{(Number(r.growth) >= 0 ? '+' : '-') + formatRoundedNumber(Math.abs(Number(r.growth || 0)))}</td>
@@ -526,12 +568,12 @@ function MarketShareTable({ rows, label }) {
           <thead style={{ color: '#94A3B8', textAlign: 'left' }}>
             <tr>
               <th style={textCell}>Company</th>
-              <th style={numberCell}>Current year sales</th>
-              <th style={numberCell}>Last year sales</th>
+              <th style={numberCell}>CY sales</th>
+              <th style={numberCell}>LY sales</th>
               <th style={numberCell}>Growth</th>
               <th style={numberCell}>Growth %</th>
-              <th style={numberCell}>Current share</th>
-              <th style={numberCell}>Last year share</th>
+              <th style={numberCell}>CY share</th>
+              <th style={numberCell}>LY share</th>
               <th style={numberCell}>Change</th>
               <th style={numberCell}>Mop up volume</th>
             </tr>
@@ -582,11 +624,6 @@ function MarketShareTable({ rows, label }) {
 function ProjectionTable({ rows, label, targetMonth }) {
   const textCell = { padding: "8px 6px", textAlign: "left" };
   const numberCell = { padding: "8px 6px", textAlign: "right", whiteSpace: "nowrap" };
-  const [targetYearRaw] = (targetMonth || "").split("-");
-  const targetYear = Number(targetYearRaw);
-  const lastYearMonthLabel = targetYear
-    ? `${formatMonth(targetMonth).replace(/\s+\d{4}$/, "")} ${targetYear - 1}`
-    : "Last year";
   return (
     <div style={{ marginTop: 10 }}>
       <h4 style={{ margin: "0 0 6px 0" }}>{label}</h4>
@@ -595,12 +632,12 @@ function ProjectionTable({ rows, label, targetMonth }) {
           <thead style={{ color: "#94A3B8", textAlign: "left" }}>
             <tr>
               <th style={textCell}>Company</th>
-              <th style={numberCell}>{lastYearMonthLabel} sales</th>
-              <th style={numberCell}>{formatMonth(targetMonth)} projected sales</th>
+              <th style={numberCell}>LY sales</th>
+              <th style={numberCell}>Projected CY sales</th>
               <th style={numberCell}>Projected growth</th>
               <th style={numberCell}>Projected growth %</th>
-              <th style={numberCell}>{lastYearMonthLabel} share</th>
-              <th style={numberCell}>Projected share</th>
+              <th style={numberCell}>LY share</th>
+              <th style={numberCell}>Projected CY share</th>
               <th style={numberCell}>Projected change</th>
               <th style={textCell}>Confidence</th>
             </tr>
@@ -694,12 +731,12 @@ function TradingAreaLossTable({ rows, label, onAreaSelect }) {
           <thead style={{ color: '#94A3B8', textAlign: 'left' }}>
             <tr>
               <th style={textCell}>Trading area</th>
-              <th style={numberCell}>IOC current sales</th>
-              <th style={numberCell}>IOC last year sales</th>
+              <th style={numberCell}>IOC CY sales</th>
+              <th style={numberCell}>IOC LY sales</th>
               <th style={numberCell}>Growth</th>
               <th style={numberCell}>Growth %</th>
-              <th style={numberCell}>IOC current share</th>
-              <th style={numberCell}>IOC last year share</th>
+              <th style={numberCell}>IOC CY share</th>
+              <th style={numberCell}>IOC LY share</th>
               <th style={numberCell}>Share loss</th>
             </tr>
           </thead>
@@ -709,23 +746,9 @@ function TradingAreaLossTable({ rows, label, onAreaSelect }) {
             ) : rows.map((r, i) => (
               <tr key={i} style={{ borderTop: '1px solid #F1F5F9' }}>
                 <td style={{ ...textCell, fontWeight: 700 }}>
-                  <button
-                    type="button"
-                    onClick={() => onAreaSelect && onAreaSelect(r)}
-                    style={{
-                      border: 'none',
-                      background: 'transparent',
-                      padding: 0,
-                      margin: 0,
-                      color: '#1D4ED8',
-                      cursor: 'pointer',
-                      fontWeight: 700,
-                      textAlign: 'left',
-                      textDecoration: 'none'
-                    }}
-                  >
+                  <AnalysisTableLink onClick={() => onAreaSelect?.(r)}>
                     {r.area}
-                  </button>
+                  </AnalysisTableLink>
                 </td>
                 <td style={numberCell}>{formatRoundedNumber(r.curr)}</td>
                 <td style={numberCell}>{formatRoundedNumber(r.last)}</td>
@@ -1693,8 +1716,37 @@ function selectSuggestion(sug) {
     const areaNorm = areaName.toLowerCase();
     if (!areaNorm) return;
     setSelected(null);
-    setTaView({ period: returnPage === 9 ? "cumulative" : "month", metric: "combined" });
+    const cumulativePages = new Set([3, 5, 7, 9]);
+    setTaView({ period: cumulativePages.has(returnPage) ? "cumulative" : "month", metric: "combined" });
     setTaSelected({ trading_area: areaName, trading_area_norm: areaNorm, returnPage });
+  }
+
+  function openOutletAnalysis(row) {
+    const outletName = (row?.name || "").toString().trim().toLowerCase();
+    const company = (row?.company || "").toString().trim().toLowerCase();
+    const area = (row?.area || "").toString().trim().toLowerCase();
+    const station = stations.find((candidate) =>
+      (candidate.name || "").toString().trim().toLowerCase() === outletName
+      && (candidate.company || "").toString().trim().toLowerCase() === company
+      && (candidate.trading_area || "").toString().trim().toLowerCase() === area
+    );
+    if (!station) return;
+    const returnPage = pageIndex;
+    const cumulativePages = new Set([3, 5]);
+    setTaSelected(null);
+    setSelected({
+      ...station,
+      trading_area_norm: station.trading_area_norm || (station.trading_area || "").toLowerCase(),
+      openedFromAnalysis: true,
+      returnPage,
+    });
+    setPageIndex(cumulativePages.has(returnPage) ? 1 : 0);
+  }
+
+  function closeLinkedOutletAnalysis() {
+    const returnPage = selected?.returnPage;
+    setSelected(null);
+    setPageIndex(typeof returnPage === "number" ? returnPage : 2);
   }
 
   function closeTradingAreaAnalysis() {
@@ -2140,8 +2192,10 @@ onBlur={e => e.currentTarget.style.border = '1px solid transparent'}
       const cmp = (st.company || '').toString().replace(/\s+/g, '').toUpperCase();
       const baseIcon = iconsMap[cmp] ? iconsMap[cmp] : fallbackIcon(st.company);
 
+      const activeTradingAreaNorm =
+        selected?.trading_area_norm || taSelected?.trading_area_norm;
       const isInSelectedArea =
-        selected && st.trading_area_norm === selected.trading_area_norm;
+        activeTradingAreaNorm && st.trading_area_norm === activeTradingAreaNorm;
       const isSelectedOutlet =
         selected && outletKeyForRow(st) === outletKeyForRow(selected);
 
@@ -2350,52 +2404,6 @@ onBlur={e => e.currentTarget.style.border = '1px solid transparent'}
   ) : (
     /* ============ NON-AI: EVERYTHING ELSE ============ */
     <>
-      {/* Header controls near AI */}
-      {taSelected ? (
-        <div style={{ position: 'absolute', top: 8, right: 56, zIndex: 1000, display: 'flex', gap: 6, alignItems: 'center' }}>
-          <button
-            onClick={() => setTaView(prev => ({ ...prev, period: "month" }))}
-            aria-label="Monthly period"
-            title="Month"
-            className="nav-btn"
-            style={{ padding:'6px 9px', borderRadius:8, border:'none', background:'#F8FAFC', cursor:'pointer', opacity: taView.period === "month" ? 1 : 0.7, fontWeight: 700, fontSize: 12, lineHeight: 1 }}
-          >
-            Month
-          </button>
-          <button
-            onClick={() => setTaView(prev => ({ ...prev, period: "cumulative" }))}
-            aria-label="Cumulative period"
-            title="Cumulative"
-            className="nav-btn"
-            style={{ padding:'6px 9px', borderRadius:8, border:'none', background:'#F8FAFC', cursor:'pointer', opacity: taView.period === "cumulative" ? 1 : 0.7, fontWeight: 700, fontSize: 12, lineHeight: 1 }}
-          >
-            Cumulative
-          </button>
-          <button
-            onClick={() => cycleTaMetric(-1)}
-            aria-label="Previous analysis page"
-            title="Previous analysis page"
-            className="nav-btn"
-            style={{ width:32, height:32, borderRadius:8, border:'none', background:'#F8FAFC', cursor:'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
-              <path d="M15 6l-6 6 6 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </button>
-          <button
-            onClick={() => cycleTaMetric(1)}
-            aria-label="Next analysis page"
-            title="Next analysis page"
-            className="nav-btn"
-            style={{ width:32, height:32, borderRadius:8, border:'none', background:'#F8FAFC', cursor:'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
-              <path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </button>
-        </div>
-      ) : null}
-
       {/* Top-right AI open button (same spot as ✕) */}
       <button
         aria-label="Open AI"
@@ -2420,6 +2428,8 @@ onBlur={e => e.currentTarget.style.border = '1px solid transparent'}
           latestMonth={latestMonth}
           outletsInAreaNorm={outletsInAreaNorm}
           onBack={closeTradingAreaAnalysis}
+          onPeriodChange={(period) => setTaView((prev) => ({ ...prev, period }))}
+          onCycleMetric={cycleTaMetric}
         />
       ) : !selected ? (
         <div>
@@ -2816,9 +2826,19 @@ onBlur={e => e.currentTarget.style.border = '1px solid transparent'}
                 </div>
                 <PageContextLine>{context}</PageContextLine>
                 <SummaryTable rows={summaryMS}  label="MS Summary" />
-                <GrowthTable  rows={filteredRowsMS}     label="MS Outlets" />
+                <GrowthTable
+                  rows={filteredRowsMS}
+                  label="MS Outlets"
+                  onOutletSelect={openOutletAnalysis}
+                  onAreaSelect={(row) => openTradingAreaAnalysis(row, pageIndex)}
+                />
                 <SummaryTable rows={summaryHSD} label="HSD Summary" />
-                <GrowthTable  rows={filteredRowsHSD}    label="HSD Outlets" />
+                <GrowthTable
+                  rows={filteredRowsHSD}
+                  label="HSD Outlets"
+                  onOutletSelect={openOutletAnalysis}
+                  onAreaSelect={(row) => openTradingAreaAnalysis(row, pageIndex)}
+                />
               </div>
             );
           })()}
@@ -2831,6 +2851,7 @@ onBlur={e => e.currentTarget.style.border = '1px solid transparent'}
           cumulativeSums={cumulativeSums}
           outletsInAreaNorm={outletsInAreaNorm}
           onSetPageIndex={setPageIndex}
+          onBack={selected?.openedFromAnalysis ? closeLinkedOutletAnalysis : undefined}
         />
       )}
     </>

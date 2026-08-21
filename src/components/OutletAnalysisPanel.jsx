@@ -38,6 +38,7 @@ export default function OutletAnalysisPanel({
   cumulativeSums,
   outletsInAreaNorm,
   onSetPageIndex,
+  onBack,
 }) {
   const data = useMemo(() => {
     const areaNorm = selected?.trading_area_norm || (selected?.trading_area || "").toLowerCase();
@@ -73,10 +74,38 @@ export default function OutletAnalysisPanel({
       >
         <div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
-            <div>
-              <h2 style={{ margin: 0 }}>{selected?.name}</h2>
-              <div style={{ color: "#64748B", marginTop: 6 }}>
-                {selected?.company} • {selected?.trading_area}
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+              {onBack ? (
+                <button
+                  type="button"
+                  onClick={onBack}
+                  aria-label="Back to previous analysis screen"
+                  title="Back"
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: 8,
+                    border: "1px solid #CBD5E1",
+                    background: "#FFFFFF",
+                    color: "#334155",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: 4,
+                    flex: "0 0 auto",
+                  }}
+                >
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+              ) : null}
+              <div>
+                <h2 style={{ margin: 0 }}>{selected?.name}</h2>
+                <div style={{ color: "#64748B", marginTop: 6 }}>
+                  {selected?.company} • {selected?.trading_area}
+                </div>
               </div>
             </div>
 
@@ -126,10 +155,10 @@ export default function OutletAnalysisPanel({
           <div style={{ marginTop: 16 }}>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 12, alignItems: "center" }}>
               <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>Month</div>
-              <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>MS</div>
+              <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>MS CY</div>
               <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>MS LY</div>
               <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>MS Change</div>
-              <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>HSD</div>
+              <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>HSD CY</div>
               <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>HSD LY</div>
               <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>HSD Change</div>
             </div>
@@ -204,10 +233,10 @@ export default function OutletAnalysisPanel({
                   <tr>
                     <th style={{ padding: "8px 6px", textAlign: "left" }}>Outlet</th>
                     <th style={{ padding: "8px 6px", textAlign: "left" }}>Company</th>
-                    <th style={{ padding: "8px 6px", textAlign: "right" }}>MS</th>
+                    <th style={{ padding: "8px 6px", textAlign: "right" }}>MS CY</th>
                     <th style={{ padding: "8px 6px", textAlign: "right" }}>MS LY</th>
                     <th style={{ padding: "8px 6px", textAlign: "right" }}>Volume Change</th>
-                    <th style={{ padding: "8px 6px", textAlign: "right" }}>HSD</th>
+                    <th style={{ padding: "8px 6px", textAlign: "right" }}>HSD CY</th>
                     <th style={{ padding: "8px 6px", textAlign: "right" }}>HSD LY</th>
                     <th style={{ padding: "8px 6px", textAlign: "right" }}>Volume Change</th>
                   </tr>
@@ -257,7 +286,7 @@ export default function OutletAnalysisPanel({
                 <thead style={{ color: "#94A3B8", textAlign: "left" }}>
                   <tr>
                     <th style={{ padding: "8px 6px", textAlign: "left" }}>Company</th>
-                    <th style={{ padding: "8px 6px", textAlign: "right" }}>Market Share</th>
+                    <th style={{ padding: "8px 6px", textAlign: "right" }}>Market Share (CY)</th>
                     <th style={{ padding: "8px 6px", textAlign: "right" }}>Market Share (LY)</th>
                     <th style={{ padding: "8px 6px", textAlign: "right" }}>Change</th>
                   </tr>

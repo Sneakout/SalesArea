@@ -73,7 +73,15 @@ export default function OutletAnalysisPanel({
         transition={{ duration: 0.3 }}
       >
         <div>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
+          <div style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            gap: 20,
+            flexWrap: "wrap",
+            padding: "4px 0 14px",
+            borderBottom: "1px solid #E2E8F0",
+          }}>
             <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
               {onBack ? (
                 <button
@@ -102,57 +110,44 @@ export default function OutletAnalysisPanel({
                 </button>
               ) : null}
               <div>
-                <h2 style={{ margin: 0 }}>{selected?.name}</h2>
-                <div style={{ color: "#64748B", marginTop: 6 }}>
+                <div style={{ color: "#64748B", fontSize: 11, fontWeight: 800, letterSpacing: ".07em", textTransform: "uppercase" }}>Outlet</div>
+                <h2 style={{ margin: "2px 0 0" }}>{selected?.name}</h2>
+                <div style={{ color: "#64748B", marginTop: 3, fontSize: 13 }}>
                   {selected?.company} • {selected?.trading_area}
                 </div>
               </div>
             </div>
 
-            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-              <button
-                onClick={() => onSetPageIndex(0)}
-                aria-label="Monthly view"
-                title="Monthly view"
-                className="nav-btn"
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 8,
-                  border: "none",
-                  background: "#F8FAFC",
-                  cursor: "pointer",
-                  opacity: pageIndex === 0 ? 1 : 0.7,
-                }}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
-                  <path d="M15 6l-6 6 6 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </button>
-
-              <button
-                onClick={() => onSetPageIndex(1)}
-                aria-label="Cumulative view"
-                title="Cumulative (Apr → latest)"
-                className="nav-btn"
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 8,
-                  border: "none",
-                  background: "#F8FAFC",
-                  cursor: "pointer",
-                  opacity: pageIndex === 1 ? 1 : 0.7,
-                }}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
-                  <path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </button>
+            <div>
+              <div style={{ color: "#64748B", fontSize: 11, fontWeight: 800, marginBottom: 5, textTransform: "uppercase", letterSpacing: ".05em" }}>Period</div>
+              <div style={{ display: "inline-flex", padding: 3, borderRadius: 9, background: "#F1F5F9" }}>
+                {[{ value: 0, label: "Month" }, { value: 1, label: "Cumulative" }].map((option) => {
+                  const active = pageIndex === option.value;
+                  return (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => onSetPageIndex(option.value)}
+                      aria-pressed={active}
+                      style={{
+                        border: "none",
+                        borderRadius: 7,
+                        padding: "6px 10px",
+                        background: active ? "#FFFFFF" : "transparent",
+                        color: active ? "#0F172A" : "#64748B",
+                        boxShadow: active ? "0 1px 3px rgba(15,23,42,.12)" : "none",
+                        cursor: "pointer",
+                        fontSize: 12,
+                        fontWeight: 700,
+                      }}
+                    >{option.label}</button>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
-          <div style={{ marginTop: 16 }}>
+          <div style={{ marginTop: 16, padding: 14, border: "1px solid #E2E8F0", borderRadius: 12, background: "#F8FAFC" }}>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 12, alignItems: "center" }}>
               <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>Month</div>
               <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 700 }}>MS CY</div>
@@ -210,9 +205,9 @@ export default function OutletAnalysisPanel({
             </AnimatePresence>
           </div>
 
-          <div style={{ marginTop: 20 }}>
-            <h3 style={{ margin: "0 0 8px 0", display: "flex", alignItems: "center", gap: 6 }}>
-              Trading Area Outlets
+          <div style={{ marginTop: 24 }}>
+            <h3 style={{ margin: "0 0 10px 0", display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
+              Outlets in {selected?.trading_area}
               <AnimatePresence mode="wait">
                 <motion.span
                   key={pageIndex === 1 ? "outlets-cumulative-title" : "outlets-monthly-title"}
@@ -220,14 +215,14 @@ export default function OutletAnalysisPanel({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 6 }}
                   transition={{ duration: 0.3 }}
-                  style={{ fontWeight: 400, fontSize: "0.9em", color: "#64748B" }}
+                  style={{ fontWeight: 500, fontSize: 12, color: "#64748B" }}
                 >
-                  ({periodTitle})
+                  {periodTitle}
                 </motion.span>
               </AnimatePresence>
             </h3>
 
-            <div style={{ background: "#fff", borderRadius: 8, padding: 8, boxShadow: "0 1px 2px rgba(2,6,23,0.04)" }}>
+            <div style={{ background: "#fff", border: "1px solid #E2E8F0", borderRadius: 12, padding: 10, boxShadow: "0 1px 2px rgba(2,6,23,0.04)" }}>
               <table style={{ width: "100%", fontSize: 13, borderCollapse: "collapse" }}>
                 <thead style={{ color: "#94A3B8", textAlign: "left" }}>
                   <tr>
@@ -279,10 +274,16 @@ export default function OutletAnalysisPanel({
             </div>
           </div>
 
-          <div style={{ marginTop: 20 }}>
-            <h3 style={{ margin: "0 0 8px 0" }}>Trading Area Market Share</h3>
-            <div style={{ background: "#fff", borderRadius: 8, padding: 12, boxShadow: "0 1px 2px rgba(2,6,23,0.04)" }}>
-              <table style={{ width: "100%", fontSize: 13, borderCollapse: "collapse" }}>
+          <div style={{ marginTop: 24 }}>
+            <h3 style={{ margin: "0 0 10px 0" }}>Market share in {selected?.trading_area}</h3>
+            <div style={{ width: "min(100%, 960px)", boxSizing: "border-box", background: "#fff", border: "1px solid #E2E8F0", borderRadius: 12, padding: 12, boxShadow: "0 1px 2px rgba(2,6,23,0.04)" }}>
+              <table style={{ width: "100%", fontSize: 13, borderCollapse: "collapse", tableLayout: "fixed" }}>
+                <colgroup>
+                  <col style={{ width: "28%" }} />
+                  <col style={{ width: "24%" }} />
+                  <col style={{ width: "24%" }} />
+                  <col style={{ width: "24%" }} />
+                </colgroup>
                 <thead style={{ color: "#94A3B8", textAlign: "left" }}>
                   <tr>
                     <th style={{ padding: "8px 6px", textAlign: "left" }}>Company</th>

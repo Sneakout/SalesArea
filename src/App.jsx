@@ -1440,8 +1440,8 @@ async function generateInsights() {
 }
 
 // small helper to create suggestion objects
-function makeSuggestion(label, type, lat = null, lng = null, station = null) {
-  return { label, type, lat, lng, station };
+function makeSuggestion(label, type, lat = null, lng = null, station = null, secondary = "") {
+  return { label, type, lat, lng, station, secondary };
 }
 
 function focusStationOnMap(station, mapRef, setSelected, setTaSelected) {
@@ -1508,18 +1508,33 @@ function updateSuggestions(q) {
       const outletIdentity = stationGroupKey(s);
       if (seenOutletKeys.has(outletIdentity)) continue;
       seenOutletKeys.add(outletIdentity);
-      ss.push(makeSuggestion(stationDisplayLabel(s, duplicateNameKeys), 'Outlet', s.lat, s.lng, s));
+      ss.push(makeSuggestion(
+        stationDisplayLabel(s, duplicateNameKeys),
+        'Outlet',
+        s.lat,
+        s.lng,
+        s,
+        [s.company, s.trading_area].filter(Boolean).join(' • ')
+      ));
       if (ss.length >= 12) break;
     }
   }
   // if not many matches, include trading area matches
   if (ss.length < 12) {
+    const areasSeen = new Set();
     for (const s of stations) {
       if (!s.hasMonthData) continue;
       const area = (s.trading_area || '').toString().toLowerCase();
-      if (area && area.includes(value)) {
-        // label uses trading area and an example outlet name
-        ss.push(makeSuggestion(`${s.trading_area} · ${s.name}`, 'Trading area', s.lat, s.lng, s));
+      if (area && area.includes(value) && !areasSeen.has(area)) {
+        areasSeen.add(area);
+        ss.push(makeSuggestion(
+          s.trading_area,
+          'Trading area',
+          s.lat,
+          s.lng,
+          s,
+          `${s.name}${s.company ? ` • ${s.company}` : ''}`
+        ));
         if (ss.length >= 20) break;
       }
     }
@@ -1532,7 +1547,14 @@ function updateSuggestions(q) {
       const comp = (s.company || '').toString().toLowerCase();
       if (comp && comp.includes(value) && !companiesSeen.has(comp)) {
         companiesSeen.add(comp);
-        ss.push(makeSuggestion(`${s.company} · ${s.name}`, 'Company', s.lat, s.lng, s));
+        ss.push(makeSuggestion(
+          s.company,
+          'Company',
+          s.lat,
+          s.lng,
+          s,
+          `${s.name}${s.trading_area ? ` • ${s.trading_area}` : ''}`
+        ));
         if (ss.length >= 20) break;
       }
     }
@@ -2089,8 +2111,8 @@ function AIReplyPro({ text }) {
   left: '50%',
   transform: 'translateX(-50%)',   // center horizontally
   zIndex: 999,
-  width: 260,
-  borderRadius: 5,
+  width: 'min(360px, calc(100% - 24px))',
+  borderRadius: 12,
   background: 'rgba(255,255,255,0.4)',   // transparent
   backdropFilter: 'blur(6px)',           // frosted glass
   padding: 5,
@@ -2153,26 +2175,55 @@ onBlur={e => e.currentTarget.style.border = '1px solid transparent'}
     </div>
 
     {suggestions.length > 0 && (
-      <div style={{ maxHeight: 220, overflowY: 'auto', borderTop: '1px solid #F1F5F9', paddingTop: 6 }}>
-        {suggestions.slice(0, 20).map((s, idx) => (
-          <div
-            key={idx}
-            role="button"
-            onClick={() => selectSuggestion(s)}
-            style={{
-              padding: '8px 6px',
-              borderRadius: 8,
-              cursor: 'pointer',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              background: idx === 0 ? 'rgba(14,165,233,0.03)' : 'transparent'
-            }}
-          >
-            <div style={{ fontSize: 13, color: '#0F172A', fontWeight: 600 }}>{s.label}</div>
-            <div style={{ fontSize: 12, color: '#64748B' }}>{s.type}</div>
-          </div>
-        ))}
+      <div style={{ maxHeight: 330, overflowY: 'auto', borderTop: '1px solid #E2E8F0', padding: '6px 2px 2px' }}>
+        {suggestions.slice(0, 20).map((s, idx, visibleSuggestions) => {
+          const showGroupLabel = idx === 0 || visibleSuggestions[idx - 1].type !== s.type;
+          const shortType = s.type === 'Outlet' ? 'RO' : s.type === 'Trading area' ? 'TA' : 'CO';
+          return (
+            <React.Fragment key={`${s.type}-${s.label}-${idx}`}>
+              {showGroupLabel ? (
+                <div style={{ padding: '7px 8px 4px', color: '#94A3B8', fontSize: 10, fontWeight: 800, letterSpacing: '.08em', textTransform: 'uppercase' }}>
+                  {s.type === 'Outlet' ? 'Outlets' : s.type === 'Trading area' ? 'Trading areas' : 'Companies'}
+                </div>
+              ) : null}
+              <button
+                type="button"
+                onClick={() => selectSuggestion(s)}
+                style={{
+                  width: '100%',
+                  padding: '8px',
+                  border: 'none',
+                  borderRadius: 9,
+                  cursor: 'pointer',
+                  display: 'grid',
+                  gridTemplateColumns: '30px minmax(0, 1fr) 16px',
+                  gap: 9,
+                  alignItems: 'center',
+                  textAlign: 'left',
+                  background: idx === 0 ? '#F1F5F9' : 'transparent',
+                  color: '#0F172A'
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = '#F1F5F9'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = idx === 0 ? '#F1F5F9' : 'transparent'; }}
+              >
+                <span style={{ width: 30, height: 30, borderRadius: 8, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: s.type === 'Outlet' ? '#E0F2FE' : s.type === 'Trading area' ? '#ECFDF5' : '#F5F3FF', color: s.type === 'Outlet' ? '#0369A1' : s.type === 'Trading area' ? '#047857' : '#6D28D9', fontSize: 10, fontWeight: 800 }}>
+                  {shortType}
+                </span>
+                <span style={{ minWidth: 0 }}>
+                  <span style={{ display: '-webkit-box', overflow: 'hidden', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2, color: '#0F172A', fontSize: 12, fontWeight: 750, lineHeight: 1.25 }}>
+                    {s.label}
+                  </span>
+                  {s.secondary ? (
+                    <span style={{ display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: 2, color: '#64748B', fontSize: 10.5 }}>
+                      {s.secondary}
+                    </span>
+                  ) : null}
+                </span>
+                <span aria-hidden="true" style={{ color: '#94A3B8', fontSize: 18 }}>›</span>
+              </button>
+            </React.Fragment>
+          );
+        })}
       </div>
     )}
   </div>

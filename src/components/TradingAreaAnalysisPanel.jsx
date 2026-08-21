@@ -180,7 +180,7 @@ export default function TradingAreaAnalysisPanel({
             </div>
           </div>
 
-          <div style={{ marginTop: 16 }}>
+          <div className="analysis-kpi-card" style={{ marginTop: 16 }}>
             <div
               style={{
                 display: "grid",
@@ -214,7 +214,7 @@ export default function TradingAreaAnalysisPanel({
 
             <AnimatePresence mode="wait">
               <motion.div
-                key={isCumulative ? "ta-cumulative" : "ta-monthly"}
+                key={`ta-${isCumulative ? "cumulative" : "monthly"}-${latestMonth}`}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}

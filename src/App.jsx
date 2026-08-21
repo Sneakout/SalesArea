@@ -33,7 +33,7 @@ import {
 } from "./lib/analytics";
 import OutletAnalysisPanel from "./components/OutletAnalysisPanel";
 import TradingAreaAnalysisPanel from "./components/TradingAreaAnalysisPanel";
-import { ShareChange } from "./components/analysisShared";
+import { AnimatedTableBody, ShareChange } from "./components/analysisShared";
 
 /* ---------- config ---------- */
 const STORAGE_KEY = "fuelmap_records_v5";
@@ -494,7 +494,7 @@ function GrowthTable({ rows, label, onOutletSelect, onAreaSelect }) {
   </tr>
 </thead>
 
-          <tbody>
+          <AnimatedTableBody rows={rows}>
             {(!rows || rows.length === 0) ? (
               <tr><td colSpan={6} style={{ padding: 16, color: '#64748B' }}>No matching ROs.</td></tr>
             ) : rows.map((r, i) => (
@@ -516,7 +516,7 @@ function GrowthTable({ rows, label, onOutletSelect, onAreaSelect }) {
                 <td style={numberCell}>{Number(r.growthPct).toFixed(1)}%</td>
               </tr>
             ))}
-          </tbody>
+          </AnimatedTableBody>
         </table>
       </div>
     </div>
@@ -526,7 +526,7 @@ function SummaryTable({ rows, label }) {
   const textCell = { padding: '8px 6px', textAlign: 'left' };
   const numberCell = { padding: '8px 6px', textAlign: 'right', whiteSpace: 'nowrap' };
   return (
-    <div style={{ marginTop: 10 }}>
+    <div className="analysis-summary-section" style={{ marginTop: 10 }}>
       <h4 style={{ margin: '0 0 6px 0' }}>{label}</h4>
       <div style={{ background: '#fff', borderRadius: 8, padding: 12, boxShadow: '0 1px 2px rgba(2,6,23,0.04)' }}>
         <table style={{ width: '100%', fontSize: 13, borderCollapse: 'collapse' }}>
@@ -538,7 +538,7 @@ function SummaryTable({ rows, label }) {
               <th style={numberCell}>ROs with base</th>
             </tr>
           </thead>
-          <tbody>
+          <AnimatedTableBody rows={rows}>
             {(!rows || rows.length === 0) ? (
               <tr><td colSpan={4} style={{ padding: 16, color: '#64748B' }}>No data.</td></tr>
             ) : rows.map((r, i) => (
@@ -549,7 +549,7 @@ function SummaryTable({ rows, label }) {
                 <td style={numberCell}>{r.withBase}</td>
               </tr>
             ))}
-          </tbody>
+          </AnimatedTableBody>
         </table>
       </div>
     </div>
@@ -578,7 +578,7 @@ function MarketShareTable({ rows, label }) {
               <th style={numberCell}>Mop up volume</th>
             </tr>
           </thead>
-          <tbody>
+          <AnimatedTableBody rows={rows}>
             {(!rows || rows.length === 0) ? (
               <tr><td colSpan={9} style={{ padding: 16, color: '#64748B' }}>No data.</td></tr>
             ) : rows.map((r, i) => (
@@ -614,7 +614,7 @@ function MarketShareTable({ rows, label }) {
                 }}>{formatRoundedNumber(r.mop_up)}</td>
               </tr>
             ))}
-          </tbody>
+          </AnimatedTableBody>
         </table>
       </div>
     </div>
@@ -642,7 +642,7 @@ function ProjectionTable({ rows, label, targetMonth }) {
               <th style={textCell}>Confidence</th>
             </tr>
           </thead>
-          <tbody>
+          <AnimatedTableBody rows={rows}>
             {(!rows || rows.length === 0) ? (
               <tr><td colSpan={9} style={{ padding: 16, color: "#64748B" }}>No projection data.</td></tr>
             ) : rows.map((r, index) => (
@@ -675,7 +675,7 @@ function ProjectionTable({ rows, label, targetMonth }) {
                 </td>
               </tr>
             ))}
-          </tbody>
+          </AnimatedTableBody>
         </table>
       </div>
     </div>
@@ -714,7 +714,7 @@ function ProjectionMethodologyNote({ latestMonth, targetMonth }) {
 function PageContextLine({ children }) {
   if (!children) return null;
   return (
-    <div style={{ color: "#64748B", fontSize: 13, marginBottom: 8 }}>
+    <div className="analysis-page-context" style={{ color: "#64748B", fontSize: 13, marginBottom: 8 }}>
       {children}
     </div>
   );
@@ -740,7 +740,7 @@ function TradingAreaLossTable({ rows, label, onAreaSelect }) {
               <th style={numberCell}>Share loss</th>
             </tr>
           </thead>
-          <tbody>
+          <AnimatedTableBody rows={rows}>
             {(!rows || rows.length === 0) ? (
               <tr><td colSpan={8} style={{ padding: 16, color: '#64748B' }}>No IOC losing trading areas found.</td></tr>
             ) : rows.map((r, i) => (
@@ -769,7 +769,7 @@ function TradingAreaLossTable({ rows, label, onAreaSelect }) {
                 <td style={numberCell}><ShareChange value={r.share_change || 0} /></td>
               </tr>
             ))}
-          </tbody>
+          </AnimatedTableBody>
         </table>
       </div>
     </div>
@@ -898,7 +898,7 @@ function CountSummaryTable({ rows, label }) {
   const textCell = { padding: "8px 6px", textAlign: "left" };
   const numberCell = { padding: "8px 6px", textAlign: "right", whiteSpace: "nowrap" };
   return (
-    <div style={{ marginTop: 10 }}>
+    <div className="analysis-summary-section" style={{ marginTop: 10 }}>
       <h4 style={{ margin: "0 0 6px 0" }}>{label}</h4>
       <div style={{ background: "#fff", borderRadius: 8, padding: 12, boxShadow: "0 1px 2px rgba(2,6,23,0.04)" }}>
         <table style={{ width: "100%", fontSize: 13, borderCollapse: "collapse" }}>
@@ -908,7 +908,7 @@ function CountSummaryTable({ rows, label }) {
               <th style={numberCell}>Count</th>
             </tr>
           </thead>
-          <tbody>
+          <AnimatedTableBody rows={rows}>
             {(!rows || rows.length === 0) ? (
               <tr><td colSpan={2} style={{ padding: 16, color: "#64748B" }}>No data.</td></tr>
             ) : rows.map((row, index) => (
@@ -917,7 +917,7 @@ function CountSummaryTable({ rows, label }) {
                 <td style={{ ...numberCell, fontWeight: 700 }}>{row.count}</td>
               </tr>
             ))}
-          </tbody>
+          </AnimatedTableBody>
         </table>
       </div>
     </div>
@@ -942,7 +942,7 @@ function ClassOfMarketParticipationTable({ rows, label }) {
               <th style={numberCell}>HSD volume</th>
             </tr>
           </thead>
-          <tbody>
+          <AnimatedTableBody rows={rows}>
             {(!rows || rows.length === 0) ? (
               <tr><td colSpan={6} style={{ padding: 16, color: "#64748B" }}>No data.</td></tr>
             ) : rows.map((row, index) => (
@@ -962,7 +962,7 @@ function ClassOfMarketParticipationTable({ rows, label }) {
                 <td style={{ ...numberCell, fontWeight: 700 }}>{formatRoundedNumber(row.hsdVolume)}</td>
               </tr>
             ))}
-          </tbody>
+          </AnimatedTableBody>
         </table>
       </div>
     </div>
@@ -986,7 +986,7 @@ function ClassOfMarketCompanyTotalsTable({ rows, label }) {
               <th style={numberCell}>HSD volume</th>
             </tr>
           </thead>
-          <tbody>
+          <AnimatedTableBody rows={rows}>
             {(!rows || rows.length === 0) ? (
               <tr><td colSpan={5} style={{ padding: 16, color: "#64748B" }}>No data.</td></tr>
             ) : rows.map((row, index) => (
@@ -1005,7 +1005,7 @@ function ClassOfMarketCompanyTotalsTable({ rows, label }) {
                 <td style={{ ...numberCell, fontWeight: 700 }}>{formatRoundedNumber(row.hsdVolume)}</td>
               </tr>
             ))}
-          </tbody>
+          </AnimatedTableBody>
         </table>
       </div>
     </div>
@@ -1028,7 +1028,7 @@ function CommissioningTable({ rows, label, monthLabel, trailingLabel }) {
               <th style={textCell}>{trailingLabel}</th>
             </tr>
           </thead>
-          <tbody>
+          <AnimatedTableBody rows={rows}>
             {(!rows || rows.length === 0) ? (
               <tr><td colSpan={5} style={{ padding: 16, color: "#64748B" }}>No outlets in this financial year.</td></tr>
             ) : rows.map((row, index) => (
@@ -1040,7 +1040,7 @@ function CommissioningTable({ rows, label, monthLabel, trailingLabel }) {
                 <td style={textCell}>{row[`${monthLabel}Display`] || (row[monthLabel] ? formatMonth(row[monthLabel]) : "—")}</td>
               </tr>
             ))}
-          </tbody>
+          </AnimatedTableBody>
         </table>
       </div>
     </div>
@@ -1126,7 +1126,7 @@ function SQLResult({ sql, columns = [], rows = [], summary = "" }) {
               ))}
             </tr>
           </thead>
-          <tbody>
+          <AnimatedTableBody rows={rows}>
             {rows.length === 0 ? (
               <tr><td colSpan={columns.length} style={{ padding: 12, color: "#64748B" }}>No results.</td></tr>
             ) : rows.map((r, ri) => (
@@ -1145,7 +1145,7 @@ function SQLResult({ sql, columns = [], rows = [], summary = "" }) {
                 })}
               </tr>
             ))}
-          </tbody>
+          </AnimatedTableBody>
         </table>
       </div>
     </div>
@@ -2370,7 +2370,7 @@ onBlur={e => e.currentTarget.style.border = '1px solid transparent'}
         <div style={{ width: 4, height: 36, borderRadius: 999, background: '#CBD5E1' }} />
       </div>
 
-      <aside ref={rightPaneRef}style={{ width: `${100 - leftPaneWidthPct}%`, minWidth: '20%', background: '#fff', overflow: 'auto', height: '100vh' }}>
+      <aside ref={rightPaneRef} className="analysis-pane" style={{ width: `${100 - leftPaneWidthPct}%`, minWidth: '20%', background: '#fff', overflow: 'auto', height: '100vh' }}>
 <div style={{ position:'relative', padding: 16, height: '100%' }}>
   {aiMode ? (
     /* ================= AI CHAT ONLY ================ */
@@ -2483,7 +2483,7 @@ onBlur={e => e.currentTarget.style.border = '1px solid transparent'}
           onCycleMetric={cycleTaMetric}
         />
       ) : !selected ? (
-        <div>
+        <div className="analysis-page">
           {/* Buttons visible when NO RO is selected */}
           <div className="analysis-tabs" role="tablist" aria-label="Analysis views">
             {ANALYSIS_TABS.map((tab) => {
@@ -2506,7 +2506,16 @@ onBlur={e => e.currentTarget.style.border = '1px solid transparent'}
           </div>
 
           {/* Growth/MarketShare pages when no RO is selected */}
-          {pageIndex >= 2 && (() => {
+          <AnimatePresence mode="wait" initial={false}>
+          {pageIndex >= 2 && (
+            <motion.div
+              key={`analysis-tab-page-${pageIndex}`}
+              initial={{ opacity: 0, y: 8, scale: 0.997, filter: "blur(2px)" }}
+              animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+              exit={{ opacity: 0, y: -5, scale: 0.998, filter: "blur(1px)" }}
+              transition={{ duration: 0.22, ease: [0.22, 0.8, 0.3, 1] }}
+            >
+          {(() => {
             const startMonth = fiscalYearStartMonth(latestMonth);
             const projectionMonth = nextMonth(latestMonth);
 
@@ -2893,6 +2902,9 @@ onBlur={e => e.currentTarget.style.border = '1px solid transparent'}
               </div>
             );
           })()}
+            </motion.div>
+          )}
+          </AnimatePresence>
         </div>
       ) : (
         <OutletAnalysisPanel

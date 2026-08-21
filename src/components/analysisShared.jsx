@@ -1,5 +1,32 @@
 import React from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { formatRoundedNumber } from "../lib/analytics";
+
+function tableDataKey(rows) {
+  const text = JSON.stringify(rows || []);
+  let hash = 2166136261;
+  for (let index = 0; index < text.length; index += 1) {
+    hash ^= text.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return `${rows?.length || 0}-${hash >>> 0}`;
+}
+
+export function AnimatedTableBody({ rows, children }) {
+  return (
+    <AnimatePresence mode="wait" initial={false}>
+      <motion.tbody
+        key={tableDataKey(rows)}
+        initial={{ opacity: 0, y: 7 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -4 }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
+      >
+        {children}
+      </motion.tbody>
+    </AnimatePresence>
+  );
+}
 
 export function VolumeChange({ curr, prev }) {
   const diff = Number(curr || 0) - Number(prev || 0);
@@ -98,7 +125,7 @@ export function TradingAreaPerformanceTable({
               )}
             </tr>
           </thead>
-          <tbody>
+          <AnimatedTableBody rows={rows}>
             {!rows || rows.length === 0 ? (
               <tr>
                 <td
@@ -160,7 +187,7 @@ export function TradingAreaPerformanceTable({
                 </tr>
               ))
             )}
-          </tbody>
+          </AnimatedTableBody>
         </table>
       </div>
     </div>

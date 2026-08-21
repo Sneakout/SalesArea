@@ -161,7 +161,7 @@ export default function OutletAnalysisPanel({
             <AnimatePresence mode="wait">
               {pageIndex === 1 ? (
                 <motion.div
-                  key="cumulative"
+                  key={`cumulative-${latestMonth}`}
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
@@ -182,7 +182,7 @@ export default function OutletAnalysisPanel({
                 </motion.div>
               ) : (
                 <motion.div
-                  key="monthly"
+                  key={`monthly-${selected?.month || latestMonth}`}
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
@@ -238,7 +238,7 @@ export default function OutletAnalysisPanel({
                 </thead>
                 <AnimatePresence mode="wait">
                   <motion.tbody
-                    key={pageIndex === 1 ? "outlets-cumulative" : "outlets-monthly"}
+                    key={`outlets-${pageIndex === 1 ? "cumulative" : "monthly"}-${latestMonth}`}
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -8 }}
@@ -294,7 +294,7 @@ export default function OutletAnalysisPanel({
                 </thead>
                 <AnimatePresence mode="wait">
                   <motion.tbody
-                    key={pageIndex === 1 ? "marketshare-cumulative" : "marketshare-monthly"}
+                    key={`marketshare-${pageIndex === 1 ? "cumulative" : "monthly"}-${latestMonth}`}
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -8 }}

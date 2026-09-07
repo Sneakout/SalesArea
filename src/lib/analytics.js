@@ -346,8 +346,16 @@ export function buildIOCLossTradingAreaRows(
     const volumes = mode === "cumulative"
       ? cumulativeForOutletRows(s.rows || [], startMonth, endMonth)
       : { ms: Number(s.ms || 0), ms_ly: Number(s.ms_ly || 0), hsd: Number(s.hsd || 0), hsd_ly: Number(s.hsd_ly || 0) };
-    const curr = fuel === "hsd" ? Number(volumes.hsd || 0) : Number(volumes.ms || 0);
-    const last = fuel === "hsd" ? Number(volumes.hsd_ly || 0) : Number(volumes.ms_ly || 0);
+    const curr = fuel === "combined"
+      ? Number(volumes.ms || 0) + Number(volumes.hsd || 0)
+      : fuel === "hsd"
+        ? Number(volumes.hsd || 0)
+        : Number(volumes.ms || 0);
+    const last = fuel === "combined"
+      ? Number(volumes.ms_ly || 0) + Number(volumes.hsd_ly || 0)
+      : fuel === "hsd"
+        ? Number(volumes.hsd_ly || 0)
+        : Number(volumes.ms_ly || 0);
     if (!byArea[areaKey]) byArea[areaKey] = { area: areaName, totalCurr: 0, totalLast: 0, companies: {} };
     byArea[areaKey].totalCurr += curr;
     byArea[areaKey].totalLast += last;

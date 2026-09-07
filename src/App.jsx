@@ -591,7 +591,7 @@ function MarketShareTable({ rows, label }) {
                   background: (r.growth || 0) >= 0 ? '#ECFDF5' : '#FEF2F2',
                   color: (r.growth || 0) >= 0 ? '#064E3B' : '#7F1D1D',
                   fontWeight: 700
-                }}>{(r.growth >= 0 ? '+' : '') + formatRoundedNumber(Math.abs(Number(r.growth || 0)))}</td>
+                }}>{(r.growth >= 0 ? '+' : '-') + formatRoundedNumber(Math.abs(Number(r.growth || 0)))}</td>
                 <td style={{
                   ...numberCell,
                   background: (r.growthPct || 0) >= 0 ? '#ECFDF5' : '#FEF2F2',
@@ -757,7 +757,7 @@ function TradingAreaLossTable({ rows, label, onAreaSelect }) {
                   background: (r.growth || 0) >= 0 ? '#ECFDF5' : '#FEF2F2',
                   color: (r.growth || 0) >= 0 ? '#064E3B' : '#7F1D1D',
                   fontWeight: 700
-                }}>{(r.growth >= 0 ? '+' : '') + formatRoundedNumber(Math.abs(Number(r.growth || 0)))}</td>
+                }}>{(r.growth >= 0 ? '+' : '-') + formatRoundedNumber(Math.abs(Number(r.growth || 0)))}</td>
                 <td style={{
                   ...numberCell,
                   background: (r.growthPct || 0) >= 0 ? '#ECFDF5' : '#FEF2F2',
@@ -2692,6 +2692,7 @@ onBlur={e => e.currentTarget.style.border = '1px solid transparent'}
               );
             }
             if (pageIndex === 8) {
+              const losingMonthCombined = buildIOCLossTradingAreaRows(filteredStationsByClass, { fuel: "combined", mode: "monthly", rankBy: iocLossRankBy });
               const losingMonthMS = buildIOCLossTradingAreaRows(filteredStationsByClass, { fuel: "ms", mode: "monthly", rankBy: iocLossRankBy });
               const losingMonthHSD = buildIOCLossTradingAreaRows(filteredStationsByClass, { fuel: "hsd", mode: "monthly", rankBy: iocLossRankBy });
               return (
@@ -2708,12 +2709,14 @@ onBlur={e => e.currentTarget.style.border = '1px solid transparent'}
                     </div>
                   </div>
                   <PageContextLine>{`${formatMonth(latestMonth)} • Ranked by ${iocLossRankBy === "volume" ? "volume loss" : "market share loss"}`}</PageContextLine>
+                  <TradingAreaLossTable rows={losingMonthCombined} label="MS + HSD Total" onAreaSelect={(row) => openTradingAreaAnalysis(row, 8)} />
                   <TradingAreaLossTable rows={losingMonthMS} label="MS" onAreaSelect={(row) => openTradingAreaAnalysis(row, 8)} />
                   <TradingAreaLossTable rows={losingMonthHSD} label="HSD" onAreaSelect={(row) => openTradingAreaAnalysis(row, 8)} />
                 </div>
               );
             }
             if (pageIndex === 9) {
+              const losingCumCombined = buildIOCLossTradingAreaRows(filteredStationsByClass, { fuel: "combined", mode: "cumulative", startMonth, endMonth: latestMonth, rankBy: iocLossRankBy });
               const losingCumMS = buildIOCLossTradingAreaRows(filteredStationsByClass, { fuel: "ms", mode: "cumulative", startMonth, endMonth: latestMonth, rankBy: iocLossRankBy });
               const losingCumHSD = buildIOCLossTradingAreaRows(filteredStationsByClass, { fuel: "hsd", mode: "cumulative", startMonth, endMonth: latestMonth, rankBy: iocLossRankBy });
               return (
@@ -2730,6 +2733,7 @@ onBlur={e => e.currentTarget.style.border = '1px solid transparent'}
                     </div>
                   </div>
                   <PageContextLine>{`Apr to ${formatMonth(latestMonth)} • Ranked by ${iocLossRankBy === "volume" ? "volume loss" : "market share loss"}`}</PageContextLine>
+                  <TradingAreaLossTable rows={losingCumCombined} label="MS + HSD Total" onAreaSelect={(row) => openTradingAreaAnalysis(row, 9)} />
                   <TradingAreaLossTable rows={losingCumMS} label="MS" onAreaSelect={(row) => openTradingAreaAnalysis(row, 9)} />
                   <TradingAreaLossTable rows={losingCumHSD} label="HSD" onAreaSelect={(row) => openTradingAreaAnalysis(row, 9)} />
                 </div>

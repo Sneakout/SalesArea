@@ -17,6 +17,9 @@ const COLORS = {
   greenFill: "E7F8F1",
   red: "9B2C2C",
   redFill: "FDECEC",
+  ioclBlue: "0057A8",
+  ioclFill: "FFF2DB",
+  ioclBorder: "F58220",
 };
 
 const thinBorder = {
@@ -112,50 +115,128 @@ function addSectionLabel(sheet, rowNumber, text, lastColumn) {
 
 function addOverviewSheet(workbook, activeStations, month, msRows, hsdRows) {
   const sheet = workbook.addWorksheet("Overview", { properties: { tabColor: { argb: "3B82F6" } } });
-  applySheetDefaults(sheet, [30, 22, 60], 4);
+  applySheetDefaults(sheet, [16, 11, 13, 13, 13, 13, 14, 14, 14, 12], 7);
   addSheetHeading(
     sheet,
     "Sales Area Analysis",
     `${formatMonth(month)} | Industry scope | All classes of market`,
-    "C"
+    "J"
   );
 
-  const msTotal = msRows.find((row) => row.isTotal) || {};
-  const hsdTotal = hsdRows.find((row) => row.isTotal) || {};
-  const combinedCurr = Number(msTotal.curr || 0) + Number(hsdTotal.curr || 0);
-  const combinedLast = Number(msTotal.last || 0) + Number(hsdTotal.last || 0);
+  const contextItems = [
+    ["A4", "Selected month", COLORS.paleBlue],
+    ["B4", formatMonth(month), COLORS.white],
+    ["C4", "Scope", COLORS.paleBlue],
+    ["D4", "Industry", COLORS.white],
+    ["E4", "RO count", COLORS.paleBlue],
+    ["F4", activeStations.length, COLORS.white],
+  ];
+  contextItems.forEach(([address, value, fill]) => {
+    const cell = sheet.getCell(address);
+    cell.value = value;
+    cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: fill } };
+    cell.font = {
+      name: "Aptos",
+      size: 10,
+      bold: address === "A4" || address === "C4" || address === "E4",
+      color: { argb: COLORS.navy },
+    };
+    cell.alignment = { vertical: "middle", horizontal: address === "F4" ? "right" : "left" };
+    cell.border = thinBorder;
+  });
+  sheet.getCell("F4").numFmt = "#,##0";
+  sheet.getRow(4).height = 24;
 
-  const header = sheet.getRow(4);
-  header.values = ["Metric", "Value", "Notes"];
+  addSectionLabel(sheet, 6, "Company performance", "J");
+  const header = sheet.getRow(7);
+  header.values = [
+    "Company",
+    "RO Count",
+    "MS CY",
+    "MS Share CY",
+    "HSD CY",
+    "HSD Share CY",
+    "Combined CY",
+    "Combined LY",
+    "Combined Change",
+    "Combined Growth %",
+  ];
   styleHeaderRow(header);
 
-  const overviewRows = [
-    ["Selected month", formatMonth(month), "Data shown throughout this workbook"],
-    ["Scope", "Industry", "All companies and classes of market"],
-    ["RO count", activeStations.length, "ROs with data in the selected month"],
-    ["MS sales CY", Number(msTotal.curr || 0), "Selected-month industry volume"],
-    ["MS sales LY", Number(msTotal.last || 0), "Same month last year"],
-    ["MS change", Number(msTotal.growth || 0), "CY minus LY"],
-    ["MS growth", Number(msTotal.growthPct || 0) / 100, "Percentage change from LY"],
-    ["HSD sales CY", Number(hsdTotal.curr || 0), "Selected-month industry volume"],
-    ["HSD sales LY", Number(hsdTotal.last || 0), "Same month last year"],
-    ["HSD change", Number(hsdTotal.growth || 0), "CY minus LY"],
-    ["HSD growth", Number(hsdTotal.growthPct || 0) / 100, "Percentage change from LY"],
-    ["Combined sales CY", combinedCurr, "MS + HSD"],
-    ["Combined sales LY", combinedLast, "MS + HSD, same month last year"],
-    ["Combined change", combinedCurr - combinedLast, "CY minus LY"],
-    ["Combined growth", calcGrowth(combinedCurr, combinedLast) / 100, "Percentage change from LY"],
-  ];
+  const msByCompany = new Map(msRows.map((row) => [row.company, row]));
+  const hsdByCompany = new Map(hsdRows.map((row) => [row.company, row]));
+  const roCountByCompany = activeStations.reduce((counts, station) => {
+    const company = (station.company || "").toString().trim().toUpperCase();
+    if (company) counts.set(company, (counts.get(company) || 0) + 1);
+    return counts;
+  }, new Map());
+  const companyNames = Array.from(new Set([
+    ...msRows.filter((row) => !row.isTotal).map((row) => row.company),
+    ...hsdRows.filter((row) => !row.isTotal).map((row) => row.company),
+  ])).sort((a, b) => {
+    const aCombined = Number(msByCompany.get(a)?.curr || 0) + Number(hsdByCompany.get(a)?.curr || 0);
+    const bCombined = Number(msByCompany.get(b)?.curr || 0) + Number(hsdByCompany.get(b)?.curr || 0);
+    return bCombined - aCombined || a.localeCompare(b);
+  });
+  companyNames.push("Total");
 
-  overviewRows.forEach((values) => sheet.addRow(values));
-  styleDataRange(sheet, 5, 4 + overviewRows.length, 3);
-  [7, 8, 9, 10, 12, 13, 14, 16, 17, 18].forEach((rowNumber) => {
-    sheet.getCell(rowNumber, 2).numFmt = "#,##0.0";
+  companyNames.forEach((company) => {
+    const ms = msByCompany.get(company) || {};
+    const hsd = hsdByCompany.get(company) || {};
+    const combinedCurr = Number(ms.curr || 0) + Number(hsd.curr || 0);
+    const combinedLast = Number(ms.last || 0) + Number(hsd.last || 0);
+    sheet.addRow([
+      company === "IOC" ? "IOCL" : company === "Total" ? "Industry Total" : company,
+      company === "Total" ? activeStations.length : Number(roCountByCompany.get(company) || 0),
+      Number(ms.curr || 0),
+      Number(ms.share || 0) / 100,
+      Number(hsd.curr || 0),
+      Number(hsd.share || 0) / 100,
+      combinedCurr,
+      combinedLast,
+      combinedCurr - combinedLast,
+      calcGrowth(combinedCurr, combinedLast) / 100,
+    ]);
   });
-  [11, 15, 19].forEach((rowNumber) => {
-    sheet.getCell(rowNumber, 2).numFmt = "0.0%";
+
+  const firstDataRow = 8;
+  const lastDataRow = firstDataRow + companyNames.length - 1;
+  styleDataRange(sheet, firstDataRow, lastDataRow, 10);
+  for (let row = firstDataRow; row <= lastDataRow; row += 1) {
+    sheet.getCell(row, 2).numFmt = "#,##0";
+    [3, 5, 7, 8, 9].forEach((column) => { sheet.getCell(row, column).numFmt = "#,##0.0"; });
+    [4, 6, 10].forEach((column) => { sheet.getCell(row, column).numFmt = "0.00%"; });
+    styleChangeCell(sheet.getCell(row, 9), sheet.getCell(row, 9).value);
+
+    const sourceCompany = companyNames[row - firstDataRow];
+    if (sourceCompany === "IOC") {
+      const ioclRow = sheet.getRow(row);
+      ioclRow.eachCell((cell, column) => {
+        if (column !== 9) {
+          cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: COLORS.ioclFill } };
+        }
+        cell.font = {
+          ...cell.font,
+          bold: true,
+          color: { argb: column === 1 ? COLORS.white : COLORS.ioclBlue },
+        };
+        cell.border = {
+          top: { style: "medium", color: { argb: COLORS.ioclBorder } },
+          bottom: { style: "medium", color: { argb: COLORS.ioclBorder } },
+          left: cell.border?.left || thinBorder.left,
+          right: cell.border?.right || thinBorder.right,
+        };
+      });
+      sheet.getCell(row, 1).fill = { type: "pattern", pattern: "solid", fgColor: { argb: COLORS.ioclBlue } };
+    }
+  }
+
+  const totalRow = sheet.getRow(lastDataRow);
+  totalRow.eachCell((cell) => {
+    cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: COLORS.paleBlue } };
+    cell.font = { ...cell.font, bold: true, color: { argb: COLORS.navy } };
   });
-  sheet.autoFilter = { from: "A4", to: `C${4 + overviewRows.length}` };
+  sheet.autoFilter = { from: "A7", to: `J${lastDataRow}` };
   return sheet;
 }
 
@@ -396,7 +477,223 @@ function addLosingTradingAreasSheet(workbook, month, activeStations) {
 
   const volumeEnd = addLossSection(sheet, 4, "Combined MS + HSD ranked by volume loss", volumeLossRows);
   addLossSection(sheet, volumeEnd + 2, "Combined MS + HSD ranked by market-share loss", shareLossRows);
-  return sheet;
+  return { sheet, volumeLossRows, shareLossRows };
+}
+
+function normalizeTradingArea(value) {
+  return (value || "").toString().trim().toLowerCase();
+}
+
+function styleTradingAreaCompanyRows(sheet, firstRow, companyNames) {
+  const lastRow = firstRow + companyNames.length - 1;
+  styleDataRange(sheet, firstRow, lastRow, 12);
+  for (let row = firstRow; row <= lastRow; row += 1) {
+    sheet.getCell(row, 2).numFmt = "#,##0";
+    [3, 4, 6, 7, 9, 10, 11].forEach((column) => { sheet.getCell(row, column).numFmt = "#,##0.0"; });
+    [5, 8, 12].forEach((column) => { sheet.getCell(row, column).numFmt = "0.00%"; });
+    styleChangeCell(sheet.getCell(row, 11), sheet.getCell(row, 11).value);
+
+    const company = companyNames[row - firstRow];
+    if (company === "IOC") {
+      const ioclRow = sheet.getRow(row);
+      ioclRow.eachCell((cell, column) => {
+        if (column !== 11) {
+          cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: COLORS.ioclFill } };
+        }
+        cell.font = {
+          ...cell.font,
+          bold: true,
+          color: { argb: column === 1 ? COLORS.white : COLORS.ioclBlue },
+        };
+      });
+      sheet.getCell(row, 1).fill = { type: "pattern", pattern: "solid", fgColor: { argb: COLORS.ioclBlue } };
+    }
+  }
+
+  const totalRow = sheet.getRow(lastRow);
+  totalRow.eachCell((cell) => {
+    cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: COLORS.paleBlue } };
+    cell.font = { ...cell.font, bold: true, color: { argb: COLORS.navy } };
+  });
+  return lastRow;
+}
+
+function addTradingAreaAnalysisSheet(workbook, month, activeStations, lossRows) {
+  const sheet = workbook.addWorksheet("Trading Area Analysis", { properties: { tabColor: { argb: "F59E0B" } } });
+  applySheetDefaults(sheet, [28, 12, 12, 12, 13, 12, 12, 13, 14, 14, 14, 13], 3);
+  addSheetHeading(
+    sheet,
+    "Trading Area Analysis",
+    `${formatMonth(month)} | Detailed company and RO analysis for top losing trading areas`,
+    "L"
+  );
+  sheet.mergeCells("A4:L4");
+  sheet.getCell("A4").value = "Click a trading area on the Losing Trading Areas sheet to jump directly to its analysis below.";
+  sheet.getCell("A4").font = { name: "Aptos", size: 10, italic: true, color: { argb: COLORS.slate } };
+  sheet.getCell("A4").alignment = { vertical: "middle" };
+
+  const areaNames = [];
+  const seenAreas = new Set();
+  lossRows.forEach((row) => {
+    const key = normalizeTradingArea(row.area);
+    if (!key || seenAreas.has(key)) return;
+    seenAreas.add(key);
+    areaNames.push(row.area);
+  });
+
+  const anchorByArea = new Map();
+  let currentRow = 6;
+  areaNames.forEach((areaName) => {
+    const areaKey = normalizeTradingArea(areaName);
+    const areaStations = activeStations
+      .filter((station) => normalizeTradingArea(station.trading_area_norm || station.trading_area) === areaKey)
+      .sort((a, b) =>
+        (a.company || "").localeCompare(b.company || "") ||
+        (a.name || "").localeCompare(b.name || "")
+      );
+    if (!areaStations.length) return;
+
+    anchorByArea.set(areaKey, currentRow);
+    sheet.mergeCells(`A${currentRow}:J${currentRow}`);
+    const areaTitleCell = sheet.getCell(currentRow, 1);
+    areaTitleCell.value = areaName;
+    areaTitleCell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: COLORS.navy } };
+    areaTitleCell.font = { name: "Aptos Display", size: 14, bold: true, color: { argb: COLORS.white } };
+    areaTitleCell.alignment = { vertical: "middle" };
+    areaTitleCell.border = thinBorder;
+    sheet.mergeCells(`K${currentRow}:L${currentRow}`);
+    const backCell = sheet.getCell(currentRow, 11);
+    backCell.value = { text: "Back to loss rankings", hyperlink: "#'Losing Trading Areas'!A1" };
+    backCell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: COLORS.paleBlue } };
+    backCell.font = { name: "Aptos", size: 10, bold: true, underline: true, color: { argb: COLORS.ioclBlue } };
+    backCell.alignment = { vertical: "middle", horizontal: "center" };
+    backCell.border = thinBorder;
+    sheet.getRow(currentRow).height = 28;
+
+    const companyHeaderRow = sheet.getRow(currentRow + 1);
+    companyHeaderRow.values = [
+      "Company",
+      "RO Count",
+      "MS CY",
+      "MS LY",
+      "MS Share CY",
+      "HSD CY",
+      "HSD LY",
+      "HSD Share CY",
+      "Combined CY",
+      "Combined LY",
+      "Combined Change",
+      "Combined Growth %",
+    ];
+    styleHeaderRow(companyHeaderRow);
+
+    const msRows = marketShareRowsAllMonthly_MS(areaStations, "industry");
+    const hsdRows = marketShareRowsAllMonthly_HSD(areaStations, "industry");
+    const msByCompany = new Map(msRows.map((row) => [row.company, row]));
+    const hsdByCompany = new Map(hsdRows.map((row) => [row.company, row]));
+    const roCountByCompany = areaStations.reduce((counts, station) => {
+      const company = (station.company || "").toString().trim().toUpperCase();
+      if (company) counts.set(company, (counts.get(company) || 0) + 1);
+      return counts;
+    }, new Map());
+    const companyNames = Array.from(new Set([
+      ...msRows.filter((row) => !row.isTotal).map((row) => row.company),
+      ...hsdRows.filter((row) => !row.isTotal).map((row) => row.company),
+    ])).sort((a, b) => {
+      const aCombined = Number(msByCompany.get(a)?.curr || 0) + Number(hsdByCompany.get(a)?.curr || 0);
+      const bCombined = Number(msByCompany.get(b)?.curr || 0) + Number(hsdByCompany.get(b)?.curr || 0);
+      return bCombined - aCombined || a.localeCompare(b);
+    });
+    companyNames.push("Total");
+
+    companyNames.forEach((company) => {
+      const ms = msByCompany.get(company) || {};
+      const hsd = hsdByCompany.get(company) || {};
+      const combinedCurr = Number(ms.curr || 0) + Number(hsd.curr || 0);
+      const combinedLast = Number(ms.last || 0) + Number(hsd.last || 0);
+      sheet.addRow([
+        company === "IOC" ? "IOCL" : company === "Total" ? "Trading Area Total" : company,
+        company === "Total" ? areaStations.length : Number(roCountByCompany.get(company) || 0),
+        Number(ms.curr || 0),
+        Number(ms.last || 0),
+        Number(ms.share || 0) / 100,
+        Number(hsd.curr || 0),
+        Number(hsd.last || 0),
+        Number(hsd.share || 0) / 100,
+        combinedCurr,
+        combinedLast,
+        combinedCurr - combinedLast,
+        calcGrowth(combinedCurr, combinedLast) / 100,
+      ]);
+    });
+    const companyFirstRow = currentRow + 2;
+    const companyLastRow = styleTradingAreaCompanyRows(sheet, companyFirstRow, companyNames);
+
+    const roSectionRow = companyLastRow + 2;
+    addSectionLabel(sheet, roSectionRow, `RO-wise sales | ${areaStations.length} outlets`, "L");
+    const roHeaderRow = sheet.getRow(roSectionRow + 1);
+    roHeaderRow.values = [
+      "RO Name",
+      "Company",
+      "Class",
+      "MS CY",
+      "MS LY",
+      "MS Change",
+      "HSD CY",
+      "HSD LY",
+      "HSD Change",
+      "Combined CY",
+      "Combined LY",
+      "Combined Change",
+    ];
+    styleHeaderRow(roHeaderRow);
+
+    areaStations.forEach((station) => {
+      const msCy = Number(station.ms || 0);
+      const msLy = Number(station.ms_ly || 0);
+      const hsdCy = Number(station.hsd || 0);
+      const hsdLy = Number(station.hsd_ly || 0);
+      sheet.addRow([
+        station.name || "",
+        station.company === "IOC" ? "IOCL" : station.company || "",
+        station.class_of_market || "",
+        msCy,
+        msLy,
+        msCy - msLy,
+        hsdCy,
+        hsdLy,
+        hsdCy - hsdLy,
+        msCy + hsdCy,
+        msLy + hsdLy,
+        (msCy + hsdCy) - (msLy + hsdLy),
+      ]);
+    });
+
+    const roFirstRow = roSectionRow + 2;
+    const roLastRow = roFirstRow + areaStations.length - 1;
+    styleDataRange(sheet, roFirstRow, roLastRow, 12);
+    for (let row = roFirstRow; row <= roLastRow; row += 1) {
+      [1, 2, 3].forEach((column) => { sheet.getCell(row, column).alignment = { vertical: "middle", horizontal: "left" }; });
+      for (let column = 4; column <= 12; column += 1) sheet.getCell(row, column).numFmt = "#,##0.0";
+      [6, 9, 12].forEach((column) => styleChangeCell(sheet.getCell(row, column), sheet.getCell(row, column).value));
+    }
+    currentRow = roLastRow + 3;
+  });
+
+  return { sheet, anchorByArea };
+}
+
+function addTradingAreaLinks(losingSheet, anchorByArea) {
+  for (let row = 1; row <= losingSheet.rowCount; row += 1) {
+    const cell = losingSheet.getCell(row, 2);
+    if (typeof cell.value !== "string") continue;
+    const anchorRow = anchorByArea.get(normalizeTradingArea(cell.value));
+    if (!anchorRow) continue;
+    const label = cell.value;
+    cell.value = { text: label, hyperlink: `#'Trading Area Analysis'!A${anchorRow}` };
+    cell.font = { ...cell.font, bold: true, underline: true, color: { argb: COLORS.ioclBlue } };
+    cell.alignment = { vertical: "middle", horizontal: "left" };
+  }
 }
 
 export async function buildAnalysisWorkbook({ stations = [], month, generatedAt = new Date() }) {
@@ -422,7 +719,14 @@ export async function buildAnalysisWorkbook({ stations = [], month, generatedAt 
   addOverviewSheet(workbook, activeStations, month, msRows, hsdRows);
   addMarketShareSheet(workbook, month, msRows, hsdRows);
   addRoSalesSheet(workbook, month, activeStations);
-  addLosingTradingAreasSheet(workbook, month, activeStations);
+  const losingAreas = addLosingTradingAreasSheet(workbook, month, activeStations);
+  const tradingAreaAnalysis = addTradingAreaAnalysisSheet(
+    workbook,
+    month,
+    activeStations,
+    [...losingAreas.volumeLossRows, ...losingAreas.shareLossRows]
+  );
+  addTradingAreaLinks(losingAreas.sheet, tradingAreaAnalysis.anchorByArea);
 
   workbook.eachSheet((sheet) => {
     sheet.headerFooter.oddFooter = `Page &P of &N | ${formatMonth(month)}`;

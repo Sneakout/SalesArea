@@ -378,6 +378,76 @@
   transition: transform 0.2s ease;
 }
 
+/* Selected-month controls and Excel analysis export */
+.analysis-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  min-height: 38px;
+  margin: 0 48px 12px 0;
+}
+
+.analysis-export-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 34px;
+  padding: 6px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  background: #f8fafc;
+  color: #0f172a;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 750;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  transition: border-color 160ms ease, background 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.analysis-export-button svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.analysis-export-button:hover:not(:disabled) {
+  border-color: #94a3b8;
+  background: #fff;
+  box-shadow: 0 5px 14px rgba(15, 23, 42, 0.09);
+  transform: translateY(-1px);
+}
+
+.analysis-export-button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.analysis-export-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+}
+
+.analysis-export-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #cbd5e1;
+  border-top-color: #0f172a;
+  border-radius: 50%;
+  animation: analysis-export-spin 700ms linear infinite;
+}
+
+@keyframes analysis-export-spin {
+  to { transform: rotate(360deg); }
+}
+
 .ai-btn:hover {
   transform: scale(1.05);
 }

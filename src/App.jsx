@@ -34,6 +34,7 @@ import {
 import OutletAnalysisPanel from "./components/OutletAnalysisPanel";
 import TradingAreaAnalysisPanel from "./components/TradingAreaAnalysisPanel";
 import { AnimatedTableBody, ShareChange } from "./components/analysisShared";
+import { downloadAnalysisWorkbook } from "./lib/exportAnalysisWorkbook";
 
 /* ---------- config ---------- */
 const STORAGE_KEY = "fuelmap_records_v5";
@@ -1249,6 +1250,20 @@ const [latestMonth, setLatestMonth] = useState(() => {
   const [growthCompanyFilter, setGrowthCompanyFilter] = useState("all");
   const [topCompanyFilter, setTopCompanyFilter] = useState("all");
   const [commissioningCompanyFilter, setCommissioningCompanyFilter] = useState("all");
+  const [isExportingAnalysis, setIsExportingAnalysis] = useState(false);
+
+  async function handleDownloadAnalysis() {
+    if (isExportingAnalysis) return;
+    setIsExportingAnalysis(true);
+    try {
+      await downloadAnalysisWorkbook({ stations, month: latestMonth });
+    } catch (error) {
+      console.error("analysis export error", error);
+      window.alert(error?.message || "The Excel analysis could not be prepared. Please try again.");
+    } finally {
+      setIsExportingAnalysis(false);
+    }
+  }
 
   useEffect(() => {
     if (HIDDEN_ANALYSIS_TABS.has(pageIndex)) {
@@ -1613,6 +1628,7 @@ function selectSuggestion(sug) {
       const trading_area_raw = (metaRow.trading_area || metaRow.tradingArea || metaRow.area || '').toString().trim();
       return {
         id,
+        outlet_id: normalizeOutletId(monthRow?.outlet_id || metaRow.outlet_id),
         name: metaRow.name || "",
         company: (metaRow.company || "").toString().trim(),
         class_of_market: (metaRow.class_of_market || "").toString().trim().toUpperCase(),
@@ -2463,12 +2479,31 @@ onBlur={e => e.currentTarget.style.border = '1px solid transparent'}
       >AI</button>
 
       {/* Month selector / top controls (hidden in AI mode) */}
-      <div style={{ marginBottom: 8 }}>
+      <div className="analysis-toolbar">
         <MonthSelector
           records={records}
           value={latestMonth}
           onChange={(m) => setLatestMonth(m)}
         />
+        <button
+          type="button"
+          className="analysis-export-button"
+          onClick={handleDownloadAnalysis}
+          disabled={
+            isExportingAnalysis ||
+            !stations.some((station) => station.hasMonthData && station.month === latestMonth)
+          }
+          title={`Download the complete ${formatMonth(latestMonth)} analysis as Excel`}
+        >
+          {isExportingAnalysis ? (
+            <span className="analysis-export-spinner" aria-hidden="true" />
+          ) : (
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 3v11m0 0 4-4m-4 4-4-4M5 17v3h14v-3" />
+            </svg>
+          )}
+          <span>{isExportingAnalysis ? "Preparing Excel…" : "Download Excel"}</span>
+        </button>
       </div>
 
       {/* Right pane content */}
